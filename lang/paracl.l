@@ -1,0 +1,10 @@
+%option c++
+%option noyywrap
+
+%{
+
+%}
+
+%%
+
+%%
