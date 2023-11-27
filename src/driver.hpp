@@ -13,6 +13,7 @@ namespace yy
 
 class Driver
 {
+    AST::pINode root_;
     FlexLexer *plex_;
 
 public:
@@ -37,6 +38,16 @@ public:
 
     bool parse() {
         return !parser(this).parse();
+    }
+
+    void setAST(AST::pINode root)
+    {
+        root_ = root;
+    }
+
+    AST::pINode getAST() const
+    {
+        return root_;
     }
 };
 

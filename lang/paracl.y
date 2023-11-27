@@ -1,17 +1,16 @@
 /* ----------------------------------------
  *
  * Syntax description:
- * program    -> operators
- * oparators  -> statement; operators | empty
+ * program    -> statement; program | empty
  * statement  -> if | while | assign | print
  * if         -> IF LEFT_PARENTHESS expression RIGHT_PARENTHESS
- *                  LEFT_BRACE oparators RIGHT_BRACE
+ *                  LEFT_BRACE program RIGHT_BRACE
  * while      -> WHILE LEFT_PARENTHESS expression RIGHT_PARENTHESS
- *                  LEFT_BRACE oparators RIGHT_BRACE
+ *                  LEFT_BRACE program RIGHT_BRACE
  * print      -> PRINT expression
  * assign     -> ID EQUAL (expression | INPUT)
- * expression -> term (PLUS | MINUS) expression | term
- * term       -> factor (MULT | DIV) term | factor
+ * expression -> expression (PLUS | MINUS) term | term
+ * term       -> term (MULT | DIV) factor | factor
  * factor     -> LEFT_PARENTHESS expression RIGHT_PARENTHESS | value
  * value      -> ID | INT_LITERAL
  *
@@ -30,6 +29,8 @@
 %code requires
 {
 #include <string>
+
+#include "node.hpp"
 
 namespace yy
 {
@@ -68,61 +69,65 @@ parser::token_type yylex(parser::semantic_type *yylval, Driver *driver);
 %token <int> INT_LITERAL
 %token <std::string *> ID
 
-%nterm oparators
-%nterm statement
+%nterm<AST::pINode> statement
 %nterm if
 %nterm while
 %nterm assign
-%nterm print
-%nterm expression
+%nterm<AST::pINode> print
+%nterm<AST::pINode> expression
+%nterm<AST::pINode> term
+%nterm<AST::pINode> factor
+%nterm<AST::pINode> value
 
 %start program
 
+%left PLUS MINUS
+%left MULT SUB
+
 %%
-program:    oparators
+program:    statement SCOLON program 
+        |   statement SCOLON    { driver->setAST($1); }
 ;
 
-oparators:  statement SCOLON oparators
-        |   statement SCOLON
-;
-
-statement:  if
+statement:  print               { $$ = $1; }
+        /*|if
         |   while
-        |   assign
-        |   print
+        |   assign*/
 ;
 
+/*
 if:         IF LEFT_PARENTHESS expression RIGHT_PARENTHESS
-                    LEFT_BRACE oparators RIGHT_BRACE
+                    LEFT_BRACE program RIGHT_BRACE
 ;
 
 while:      WHILE LEFT_PARENTHESS expression RIGHT_PARENTHESS
-                    LEFT_BRACE oparators RIGHT_BRACE
+                    LEFT_BRACE program RIGHT_BRACE
+;*/
+
+print:      PRINT expression    { $$ = make_print($2); }
 ;
 
-print:      PRINT expression
-;
-
+/*
 assign:     ID EQUAL expression
         |   ID EQUAL INPUT
+;*/
+
+expression: expression PLUS  term { $$ = make_operation($1, $3, AST::Operations::ADD); }
+        |   expression MINUS term { $$ = make_operation($1, $3, AST::Operations::SUB); }
+        |   term                { $$ = $1; }
 ;
 
-expression: term PLUS  expression
-        |   term MINUS expression
-        |   term
+term:       term MULT factor    { $$ = make_operation($1, $3, AST::Operations::MUL); }
+        |   term DIV  factor    { $$ = make_operation($1, $3, AST::Operations::DIV); }
+        |   factor              { $$ = $1; }
 ;
 
-term:       factor MULT term
-        |   factor DIV  term
-        |   factor
+factor:     LEFT_PARENTHESS expression RIGHT_PARENTHESS { $$ = $2; }
+        |   value               { $$ = $1; }
 ;
 
-factor:     LEFT_PARENTHESS expression RIGHT_PARENTHESS
-        |   value
-;
-
-value:      ID
-        |   INT_LITERAL
+value:      ID                  { $$ = nullptr; }
+        |   INT_LITERAL         { $$ = AST::make_integer($1); }
 ;
 %%
 
