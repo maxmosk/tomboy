@@ -13,14 +13,15 @@ flex_target(scanner
 bison_target(parser
     lang/paracl.y
     ${CMAKE_CURRENT_BINARY_DIR}/paracl.tab.cpp
-    COMPILE_FLAGS "--defines=${CMAKE_CURRENT_BINARY_DIR}/paracl.tab.hh -L C++")
+    COMPILE_FLAGS "--defines=${CMAKE_CURRENT_BINARY_DIR}/paracl.tab.hh")
 
 add_flex_bison_dependency(scanner parser)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
+include_directories(${SOURCE_DIR})
 
 add_executable(tomboy
-    "${SOURCE_DIR}/main.cpp" 
+    "${SOURCE_DIR}/main.cpp"
     ${FLEX_scanner_OUTPUTS}
     ${BISON_parser_OUTPUTS}
 )

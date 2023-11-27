@@ -4,34 +4,34 @@
 
 
 %{
-
+#include "paracl.tab.hh"
 %}
 
 
 WHITE_SPACE     [ \t\n\v]+
 DIGIT0          [0-9]
-OP_ARITH        [+-/*]
 ID              [A-Za-z_][0-9A-Za-z_]*
-SCOLON          ;
-EQUAL           =
-IF_OPERATOR     "if"
-WHILE_OPERATOR  "while"
-PRINT_OPERATOR  "print"
-INPUT_OPERATOR  "?"
 
 
 %%
 
 {WHITE_SPACE}       /* skip all spaces/tabs/other */
-{IF_OPERATOR}       // TODO
-{WHILE_OPERATOR}    // TODO
-{PRINT_OPERATOR}    // TODO
-[+-]?{DIGIT0}+      // TODO
-{ID}                // TODO
-{SCOLON}            // TODO
-{EQUAL}             // TODO
-{INPUT_OPERATOR}    // TODO
-{OP_ARITH}          // TODO
-.                   // TODO
+"if"                return yy::parser::token_type::IF;
+"while"             return yy::parser::token_type::WHILE;
+"print"             return yy::parser::token_type::PRINT;
+[+-]?{DIGIT0}+      return yy::parser::token_type::INT_LITERAL;
+{ID}                return yy::parser::token_type::ID;
+";"                 return yy::parser::token_type::SCOLON;
+"="                 return yy::parser::token_type::EQUAL;
+"?"                 return yy::parser::token_type::INPUT;
+"+"                 return yy::parser::token_type::PLUS;
+"-"                 return yy::parser::token_type::MINUS;
+"*"                 return yy::parser::token_type::MULT;
+"/"                 return yy::parser::token_type::DIV;
+"("                 return yy::parser::token_type::LEFT_PARENTHESS;
+")"                 return yy::parser::token_type::RIGHT_PARENTHESS;
+"{"                 return yy::parser::token_type::LEFT_BRACE;
+"}"                 return yy::parser::token_type::RIGHT_BRACE;
+.                   return yy::parser::token_type::ERROR;
 
 %%
