@@ -69,6 +69,7 @@ parser::token_type yylex(parser::semantic_type *yylval, Driver *driver);
 %token <int> INT_LITERAL
 %token <std::string *> ID
 
+%nterm<AST::pINode> statements
 %nterm<AST::pINode> statement
 %nterm if
 %nterm while
@@ -85,8 +86,12 @@ parser::token_type yylex(parser::semantic_type *yylval, Driver *driver);
 %left MULT SUB
 
 %%
-program:    statement SCOLON program 
-        |   statement SCOLON    { driver->setAST($1); }
+program:    statements          { driver->setAST($1); }
+;
+
+statements: statement SCOLON statements { $$ = AST::make_compound($1, $3); }
+        |   statement SCOLON    { $$ = $1; }
+        |   %empty              { $$ = AST::make_compound(nullptr, nullptr); }
 ;
 
 statement:  print               { $$ = $1; }
@@ -97,11 +102,11 @@ statement:  print               { $$ = $1; }
 
 /*
 if:         IF LEFT_PARENTHESS expression RIGHT_PARENTHESS
-                    LEFT_BRACE program RIGHT_BRACE
+                    LEFT_BRACE statements RIGHT_BRACE
 ;
 
 while:      WHILE LEFT_PARENTHESS expression RIGHT_PARENTHESS
-                    LEFT_BRACE program RIGHT_BRACE
+                    LEFT_BRACE statements RIGHT_BRACE
 ;*/
 
 print:      PRINT expression    { $$ = make_print($2); }

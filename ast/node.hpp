@@ -5,6 +5,7 @@
 
 #include "inode.hpp"
 
+
 namespace AST
 {
 namespace Node
@@ -83,6 +84,27 @@ public:
         }
 
         std::cout << value.value() << std::endl;
+
+        return std::nullopt;
+    }
+};
+
+class Compound final : public INode
+{
+public:
+    Compound(pINode left, pINode right) : INode{left, right} {}
+
+    virtual std::optional<Int> eval() const override
+    {
+        if (left_ != nullptr)
+        {
+            left_->eval();
+        }
+
+        if (right_ != nullptr)
+        {
+            right_->eval();
+        }
 
         return std::nullopt;
     }

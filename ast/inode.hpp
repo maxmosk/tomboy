@@ -43,6 +43,8 @@ pINode make_integer(Int value);
 pINode make_operation(pINode left, pINode right, Operations op);
 
 pINode make_print(pINode left);
+
+pINode make_compound(pINode left, pINode right);
 } // namespace AST
 
 #endif // INODE_HPP_INCLUDED

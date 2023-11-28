@@ -1,5 +1,6 @@
 #include "node.hpp"
 
+
 namespace AST
 {
 pINode make_integer(Int value)
@@ -15,5 +16,10 @@ pINode make_operation(pINode left, pINode right, Operations op)
 pINode make_print(pINode left)
 {
     return std::make_shared<Node::Print>(left);
+}
+
+pINode make_compound(pINode left, pINode right)
+{
+    return std::make_shared<Node::Compound>(left, right);
 }
 } // namespace AST
