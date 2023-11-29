@@ -22,4 +22,14 @@ pINode make_compound(pINode left, pINode right)
 {
     return new Node::Compound{left, right};
 }
+
+pINode make_if(pINode left, pINode right)
+{
+    return new Node::If{left, right};
+}
+
+pINode make_while(pINode left, pINode right)
+{
+    return new Node::While{left, right};
+}
 } // namespace AST

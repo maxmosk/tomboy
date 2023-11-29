@@ -71,8 +71,8 @@ parser::token_type yylex(parser::semantic_type *yylval, Driver *driver);
 
 %nterm<AST::pINode> statements
 %nterm<AST::pINode> statement
-%nterm if
-%nterm while
+%nterm<AST::pINode> if
+%nterm<AST::pINode> while
 %nterm assign
 %nterm<AST::pINode> print
 %nterm<AST::pINode> expression
@@ -89,25 +89,24 @@ parser::token_type yylex(parser::semantic_type *yylval, Driver *driver);
 program:    statements          { driver->setAST($1); }
 ;
 
-statements: statement SCOLON statements { $$ = AST::make_compound($1, $3); }
-        |   statement SCOLON    { $$ = $1; }
+statements: statement statements { $$ = AST::make_compound($1, $2); }
+        |   statement           { $$ = $1; }
         |   %empty              { $$ = AST::make_compound(nullptr, nullptr); }
 ;
 
-statement:  print               { $$ = $1; }
-        /*|if
+statement:  print SCOLON        { $$ = $1; }
+        |   if
         |   while
-        |   assign*/
+        /*|   assign*/
 ;
 
-/*
 if:         IF LEFT_PARENTHESS expression RIGHT_PARENTHESS
-                    LEFT_BRACE statements RIGHT_BRACE
+                LEFT_BRACE statements RIGHT_BRACE { $$ = AST::make_if($3, $6); }
 ;
 
 while:      WHILE LEFT_PARENTHESS expression RIGHT_PARENTHESS
-                    LEFT_BRACE statements RIGHT_BRACE
-;*/
+                LEFT_BRACE statements RIGHT_BRACE { $$ = AST::make_while($3, $6); }
+;
 
 print:      PRINT expression    { $$ = make_print($2); }
 ;

@@ -109,6 +109,52 @@ public:
         return std::nullopt;
     }
 };
+
+class If final : public INode
+{
+public:
+    If(pINode cond, pINode right) : INode{cond, right} {}
+
+    virtual std::optional<Int> eval() const override
+    {
+        auto cond = left_->eval();
+
+        if (cond == std::nullopt)
+        {
+            // TODO: exception
+        }
+
+        if (cond != 0)
+        {
+            right_->eval();
+        }
+
+        return std::nullopt;
+    }
+};
+
+class While final : public INode
+{
+public:
+    While(pINode cond, pINode right) : INode{cond, right} {}
+
+    virtual std::optional<Int> eval() const override
+    {
+        std::optional<Int> cond = std::nullopt;
+
+        while (((cond = left_->eval()) != std::nullopt) && (cond != 0))
+        {
+            right_->eval();
+        }
+
+        if (cond == std::nullopt)
+        {
+            // TODO: exception
+        }
+
+        return std::nullopt;
+    }
+};
 } // namespace Node
 } // namespace AST
 

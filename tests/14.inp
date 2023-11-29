@@ -1,0 +1,5 @@
+while (2 + 4 - 6)
+{
+    print 34;
+}
+print 5;
