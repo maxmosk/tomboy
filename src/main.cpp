@@ -16,7 +16,7 @@ int main()
         return EXIT_FAILURE;
     }
 
-    AST::pINode program = driver.getAST();
+    auto program = std::unique_ptr<AST::INode>{driver.getAST()};
     program->eval();
 
     return EXIT_SUCCESS;

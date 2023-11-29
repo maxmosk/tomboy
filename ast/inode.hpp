@@ -10,7 +10,7 @@ namespace AST
 {
 class INode;
 
-using pINode = std::shared_ptr<INode>;
+using pINode = INode *;
 using Int = std::int32_t;
 
 enum class Operations
@@ -35,7 +35,11 @@ public:
     INode &operator=(const INode &) = delete;
     INode &operator=(const INode &&) = delete;
 
-    virtual ~INode() = default;
+    virtual ~INode()
+    {
+        delete left_;
+        delete right_;
+    }
 };
 
 pINode make_integer(Int value);

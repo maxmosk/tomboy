@@ -5,21 +5,21 @@ namespace AST
 {
 pINode make_integer(Int value)
 {
-    return std::make_shared<Node::Integer>(value);
+    return new Node::Integer{value};
 }
 
 pINode make_operation(pINode left, pINode right, Operations op)
 {
-    return std::make_shared<Node::Operation>(left, right, op);
+    return new Node::Operation{left, right, op};
 }
 
 pINode make_print(pINode left)
 {
-    return std::make_shared<Node::Print>(left);
+    return new Node::Print{left};
 }
 
 pINode make_compound(pINode left, pINode right)
 {
-    return std::make_shared<Node::Compound>(left, right);
+    return new Node::Compound{left, right};
 }
 } // namespace AST
