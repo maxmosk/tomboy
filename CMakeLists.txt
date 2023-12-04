@@ -19,12 +19,11 @@ add_flex_bison_dependency(scanner parser)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include_directories(${SOURCE_DIR})
-include_directories(ast)
 
 add_executable(tomboy
     "${SOURCE_DIR}/main.cpp"
-    "ast/node.cpp"
+    "${SOURCE_DIR}/node.cpp"
     ${FLEX_scanner_OUTPUTS}
     ${BISON_parser_OUTPUTS}
-)
+            )
 target_compile_features(tomboy PRIVATE cxx_std_20)

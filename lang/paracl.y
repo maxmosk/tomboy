@@ -112,20 +112,20 @@ while:      WHILE LEFT_PARENTHESS expression RIGHT_PARENTHESS
                 LEFT_BRACE RIGHT_BRACE { $$ = AST::make_while($3, AST::make_compound(nullptr, nullptr)); }
 ;
 
-print:      PRINT expression    { $$ = make_print($2); }
+print:      PRINT expression    { $$ = AST::make_print($2); }
 ;
 
-assign:     ID EQUAL expression { $$ = make_assign($3, $1); }
-/*        |   ID EQUAL INPUT*/
+assign:     ID EQUAL expression { $$ = AST::make_assign($3, $1); }
+        |   ID EQUAL INPUT      { $$ = AST::make_assign(AST::make_input(), $1); }
 ;
 
-expression: expression PLUS  term { $$ = make_operation($1, $3, AST::Operations::ADD); }
-        |   expression MINUS term { $$ = make_operation($1, $3, AST::Operations::SUB); }
+expression: expression PLUS  term { $$ = AST::make_operation($1, $3, AST::Operations::ADD); }
+        |   expression MINUS term { $$ = AST::make_operation($1, $3, AST::Operations::SUB); }
         |   term                { $$ = $1; }
 ;
 
-term:       term MULT factor    { $$ = make_operation($1, $3, AST::Operations::MUL); }
-        |   term DIV  factor    { $$ = make_operation($1, $3, AST::Operations::DIV); }
+term:       term MULT factor    { $$ = AST::make_operation($1, $3, AST::Operations::MUL); }
+        |   term DIV  factor    { $$ = AST::make_operation($1, $3, AST::Operations::DIV); }
         |   factor              { $$ = $1; }
 ;
 

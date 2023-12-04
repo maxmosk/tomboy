@@ -115,6 +115,8 @@ pINode make_while(pINode left, pINode right);
 pINode make_variable(std::string *identifier);
 
 pINode make_assign(pINode left, std::string *identifier);
+
+pINode make_input();
 } // namespace AST
 
 #endif // INODE_HPP_INCLUDED

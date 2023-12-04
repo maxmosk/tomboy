@@ -191,6 +191,24 @@ public:
         return std::nullopt;
     }
 };
+
+class Input final : public INode
+{
+    std::string identifier_;
+public:
+    Input() : INode{nullptr, nullptr} {}
+
+    virtual std::optional<Int> eval(SymTab &table) const override
+    {
+        Int value;
+        std::cin >> value;
+        if (std::cin.fail())
+        {
+            // TODO: exception
+        }
+        return value;
+    }
+};
 } // namespace Node
 } // namespace AST
 

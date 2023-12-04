@@ -52,4 +52,9 @@ pINode make_assign(pINode left, std::string *identifier)
 
     return new Node::Assign{left, *identifier};
 }
+
+pINode make_input()
+{
+    return new Node::Input{};
+}
 } // namespace AST
