@@ -32,4 +32,24 @@ pINode make_while(pINode left, pINode right)
 {
     return new Node::While{left, right};
 }
+
+pINode make_variable(std::string *identifier)
+{
+    if (identifier == nullptr)
+    {
+        // TODO: exception
+    }
+
+    return new Node::Variable{*identifier};
+}
+
+pINode make_assign(pINode left, std::string *identifier)
+{
+    if (identifier == nullptr)
+    {
+        // TODO: exception
+    }
+
+    return new Node::Assign{left, *identifier};
+}
 } // namespace AST

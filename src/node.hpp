@@ -16,11 +16,11 @@ class Operation final : public INode
 public:
     Operation(pINode left, pINode right, Operations op) : INode{left, right}, op_{op} {}
 
-    virtual std::optional<Int> eval() const override
+    virtual std::optional<Int> eval(SymTab &table) const override
     {
         Int res = 0;
-        std::optional<Int> left_val = left_->eval();
-        std::optional<Int> right_val = right_->eval();
+        std::optional<Int> left_val = left_->eval(table);
+        std::optional<Int> right_val = right_->eval(table);
         if ((left_val == std::nullopt) || (right_val == std::nullopt))
         {
             // TODO: exception
@@ -63,7 +63,7 @@ class Integer final : public INode
 public:
     Integer(Int value) : INode{nullptr, nullptr}, value_{value} {}
 
-    virtual std::optional<Int> eval() const override
+    virtual std::optional<Int> eval(SymTab &table) const override
     {
         return value_;
     }
@@ -75,9 +75,9 @@ class Print final : public INode
 public:
     Print(pINode left) : INode{left, nullptr} {}
 
-    virtual std::optional<Int> eval() const override
+    virtual std::optional<Int> eval(SymTab &table) const override
     {
-        std::optional<Int> value = left_->eval();
+        std::optional<Int> value = left_->eval(table);
         if (value == std::nullopt)
         {
             // TODO: exception
@@ -94,16 +94,16 @@ class Compound final : public INode
 public:
     Compound(pINode left, pINode right) : INode{left, right} {}
 
-    virtual std::optional<Int> eval() const override
+    virtual std::optional<Int> eval(SymTab &table) const override
     {
         if (left_ != nullptr)
         {
-            left_->eval();
+            left_->eval(table);
         }
 
         if (right_ != nullptr)
         {
-            right_->eval();
+            right_->eval(table);
         }
 
         return std::nullopt;
@@ -115,9 +115,9 @@ class If final : public INode
 public:
     If(pINode cond, pINode right) : INode{cond, right} {}
 
-    virtual std::optional<Int> eval() const override
+    virtual std::optional<Int> eval(SymTab &table) const override
     {
-        auto cond = left_->eval();
+        auto cond = left_->eval(table);
 
         if (cond == std::nullopt)
         {
@@ -126,7 +126,9 @@ public:
 
         if (cond != 0)
         {
-            right_->eval();
+            table.push_scope();
+            right_->eval(table);
+            table.pop_scope();
         }
 
         return std::nullopt;
@@ -138,19 +140,53 @@ class While final : public INode
 public:
     While(pINode cond, pINode right) : INode{cond, right} {}
 
-    virtual std::optional<Int> eval() const override
+    virtual std::optional<Int> eval(SymTab &table) const override
     {
         std::optional<Int> cond = std::nullopt;
 
-        while (((cond = left_->eval()) != std::nullopt) && (cond != 0))
+        while (((cond = left_->eval(table)) != std::nullopt) && (cond != 0))
         {
-            right_->eval();
+            table.push_scope();
+            right_->eval(table);
+            table.pop_scope();
         }
 
         if (cond == std::nullopt)
         {
             // TODO: exception
         }
+
+        return std::nullopt;
+    }
+};
+
+class Variable final : public INode
+{
+    std::string identifier_;
+public:
+    Variable(std::string &identifier) : INode{nullptr, nullptr}, identifier_{identifier} {}
+
+    virtual std::optional<Int> eval(SymTab &table) const override
+    {
+        return table.value_of(identifier_);
+    }
+};
+
+class Assign final : public INode
+{
+    std::string identifier_;
+public:
+    Assign(pINode left, std::string &identifier) : INode{left, nullptr}, identifier_{identifier} {}
+
+    virtual std::optional<Int> eval(SymTab &table) const override
+    {
+        auto value = left_->eval(table);
+        if (value == std::nullopt)
+        {
+            // TODO: exception
+        }
+
+        table.assign(identifier_, value.value());
 
         return std::nullopt;
     }

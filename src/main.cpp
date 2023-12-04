@@ -17,7 +17,9 @@ int main()
     }
 
     auto program = std::unique_ptr<AST::INode>{driver.getAST()};
-    program->eval();
+    AST::SymTab vars{};
+    vars.push_scope();
+    program->eval(vars);
 
     return EXIT_SUCCESS;
 }

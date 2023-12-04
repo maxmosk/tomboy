@@ -73,7 +73,7 @@ parser::token_type yylex(parser::semantic_type *yylval, Driver *driver);
 %nterm<AST::pINode> statement
 %nterm<AST::pINode> if
 %nterm<AST::pINode> while
-%nterm assign
+%nterm<AST::pINode> assign
 %nterm<AST::pINode> print
 %nterm<AST::pINode> expression
 %nterm<AST::pINode> term
@@ -83,38 +83,41 @@ parser::token_type yylex(parser::semantic_type *yylval, Driver *driver);
 %start program
 
 %left PLUS MINUS
-%left MULT SUB
+%left MULT DIV
 
 %%
 program:    statements          { driver->setAST($1); }
+        |   %empty              { driver->setAST(AST::make_compound(nullptr, nullptr)); }
 ;
 
 statements: statement statements { $$ = AST::make_compound($1, $2); }
         |   statement           { $$ = $1; }
-        |   %empty              { $$ = AST::make_compound(nullptr, nullptr); }
 ;
 
-statement:  print SCOLON        { $$ = $1; }
+statement:  print SCOLON
         |   if
         |   while
-        /*|   assign*/
+        |   assign SCOLON
 ;
 
 if:         IF LEFT_PARENTHESS expression RIGHT_PARENTHESS
                 LEFT_BRACE statements RIGHT_BRACE { $$ = AST::make_if($3, $6); }
+        |   IF LEFT_PARENTHESS expression RIGHT_PARENTHESS
+                LEFT_BRACE RIGHT_BRACE { $$ = AST::make_if($3, AST::make_compound(nullptr, nullptr)); }
 ;
 
 while:      WHILE LEFT_PARENTHESS expression RIGHT_PARENTHESS
                 LEFT_BRACE statements RIGHT_BRACE { $$ = AST::make_while($3, $6); }
+        |   WHILE LEFT_PARENTHESS expression RIGHT_PARENTHESS
+                LEFT_BRACE RIGHT_BRACE { $$ = AST::make_while($3, AST::make_compound(nullptr, nullptr)); }
 ;
 
 print:      PRINT expression    { $$ = make_print($2); }
 ;
 
-/*
-assign:     ID EQUAL expression
-        |   ID EQUAL INPUT
-;*/
+assign:     ID EQUAL expression { $$ = make_assign($3, $1); }
+/*        |   ID EQUAL INPUT*/
+;
 
 expression: expression PLUS  term { $$ = make_operation($1, $3, AST::Operations::ADD); }
         |   expression MINUS term { $$ = make_operation($1, $3, AST::Operations::SUB); }
@@ -130,7 +133,7 @@ factor:     LEFT_PARENTHESS expression RIGHT_PARENTHESS { $$ = $2; }
         |   value               { $$ = $1; }
 ;
 
-value:      ID                  { $$ = nullptr; }
+value:      ID                  { $$ = AST::make_variable($1); }
         |   INT_LITERAL         { $$ = AST::make_integer($1); }
 ;
 %%
