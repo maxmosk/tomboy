@@ -91,7 +91,7 @@ program:    statements          { driver->setAST($1); }
 ;
 
 statements: statement statements { $$ = AST::make_compound($1, $2); }
-        |   statement           { $$ = $1; }
+        |   statement
 ;
 
 statement:  print SCOLON
@@ -115,13 +115,19 @@ while:      WHILE LEFT_PARENTHESS expression RIGHT_PARENTHESS
 print:      PRINT expression    { $$ = AST::make_print($2); }
 ;
 
-assign:     ID EQUAL expression { $$ = AST::make_assign($3, $1); }
-        |   ID EQUAL INPUT      { $$ = AST::make_assign(AST::make_input(), $1); }
+assign:     ID EQUAL expression {
+                                    $$ = AST::make_assign($3, $1);
+                                    delete $1;
+                                }
+        |   ID EQUAL INPUT      {
+                                    $$ = AST::make_assign(AST::make_input(), $1);
+                                    delete $1;
+                                }
 ;
 
 expression: expression PLUS  term { $$ = AST::make_operation($1, $3, AST::Operations::ADD); }
         |   expression MINUS term { $$ = AST::make_operation($1, $3, AST::Operations::SUB); }
-        |   term                { $$ = $1; }
+        |   term                  { $$ = $1; }
 ;
 
 term:       term MULT factor    { $$ = AST::make_operation($1, $3, AST::Operations::MUL); }
@@ -130,10 +136,13 @@ term:       term MULT factor    { $$ = AST::make_operation($1, $3, AST::Operatio
 ;
 
 factor:     LEFT_PARENTHESS expression RIGHT_PARENTHESS { $$ = $2; }
-        |   value               { $$ = $1; }
+        |   value
 ;
 
-value:      ID                  { $$ = AST::make_variable($1); }
+value:      ID                  {
+                                    $$ = AST::make_variable($1);
+                                    delete $1;
+                                }
         |   INT_LITERAL         { $$ = AST::make_integer($1); }
 ;
 %%

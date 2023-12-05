@@ -30,7 +30,7 @@ public:
         else if (tt == parser::token_type::ID)
         {
             yylval->as<std::string *>() = new std::string{plex_->YYText(),
-                                static_cast<std::size_t>(plex_->YYLeng())};
+                    static_cast<std::size_t>(plex_->YYLeng())};
         }
 
         return tt;
