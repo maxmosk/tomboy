@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 if [[ $# -ne 1 ]]
 then
-    echo "RTFM, desu!"
+    echo "Usage: $0 TESTS_NUMBER"
     echo
+    echo "RTFM, desu!"
     echo "Use command line option --help/-h to get it."
     exit 1
 fi
@@ -11,7 +12,7 @@ fi
 
 for i in $(seq $1)
 do
-    cmp -s <(./build/tomboy <./tests/${i}.inp) <(cat tests/${i}.out)
+    cmp -s <(./build/tomboy ./tests/${i}.paracl) <(cat tests/${i}.out)
     if [ $? -ne 0 ]
     then
         echo "*** Test " ${i} " FAILED! ***"

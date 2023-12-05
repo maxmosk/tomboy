@@ -1,4 +1,5 @@
 #include <cstdlib>
+#include <fstream>
 #include <memory>
 
 #include <FlexLexer.h>
@@ -6,9 +7,16 @@
 #include "driver.hpp"
 
 
-int main()
+int main(int argc, char **argv)
 {
-    auto lexer = std::make_unique<yyFlexLexer>();
+    if (argc != 2)
+    {
+        std::cerr << "Usage: tomboy SOURCE" << std::endl;
+        return EXIT_FAILURE;
+    }
+
+    std::ifstream source(argv[1]);
+    auto lexer = std::make_unique<yyFlexLexer>(&source);
     yy::Driver driver(lexer.get());
     if (driver.parse() == 0)
     {
