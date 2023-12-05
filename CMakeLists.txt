@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.25)
+cmake_minimum_required(VERSION 3.0)
 project(ParaCL LANGUAGES CXX)
 
 set(SOURCE_DIR     "src")

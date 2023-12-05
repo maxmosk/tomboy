@@ -188,7 +188,7 @@ public:
 
         table.assign(identifier_, value.value());
 
-        return std::nullopt;
+        return value;
     }
 };
 

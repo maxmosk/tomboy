@@ -76,14 +76,14 @@ parser::token_type yylex(parser::semantic_type *yylval, Driver *driver);
 %nterm<AST::pINode> assign
 %nterm<AST::pINode> print
 %nterm<AST::pINode> expression
+%nterm<AST::pINode> expression_eval
 %nterm<AST::pINode> term
 %nterm<AST::pINode> factor
 %nterm<AST::pINode> value
 
 %start program
 
-%left PLUS MINUS
-%left MULT DIV
+%left PLUS MINUS MULT DIV
 
 %%
 program:    statements          { driver->setAST($1); }
@@ -97,7 +97,7 @@ statements: statement statements { $$ = AST::make_compound($1, $2); }
 statement:  print SCOLON
         |   if
         |   while
-        |   assign SCOLON
+        |   expression SCOLON
 ;
 
 if:         IF LEFT_PARENTHESS expression RIGHT_PARENTHESS
@@ -125,14 +125,18 @@ assign:     ID EQUAL expression {
                                 }
 ;
 
-expression: expression PLUS  term { $$ = AST::make_operation($1, $3, AST::Operations::ADD); }
-        |   expression MINUS term { $$ = AST::make_operation($1, $3, AST::Operations::SUB); }
-        |   term                  { $$ = $1; }
+expression: expression_eval
+        |   assign
+;
+
+expression_eval:    expression_eval PLUS  term { $$ = AST::make_operation($1, $3, AST::Operations::ADD); }
+                |   expression_eval MINUS term { $$ = AST::make_operation($1, $3, AST::Operations::SUB); }
+                |   term
 ;
 
 term:       term MULT factor    { $$ = AST::make_operation($1, $3, AST::Operations::MUL); }
         |   term DIV  factor    { $$ = AST::make_operation($1, $3, AST::Operations::DIV); }
-        |   factor              { $$ = $1; }
+        |   factor
 ;
 
 factor:     LEFT_PARENTHESS expression RIGHT_PARENTHESS { $$ = $2; }
