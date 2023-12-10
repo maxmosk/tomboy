@@ -80,6 +80,7 @@ parser::token_type yylex(parser::semantic_type *yylval, Driver *driver);
 %nterm<Tomboy::AST::pINode> term
 %nterm<Tomboy::AST::pINode> factor
 %nterm<Tomboy::AST::pINode> value
+%nterm<Tomboy::AST::pINode> neg_value
 
 %start program
 
@@ -148,6 +149,10 @@ value:      ID                  {
                                     delete $1;
                                 }
         |   INT_LITERAL         { $$ = Tomboy::AST::make_integer($1); }
+        |   neg_value
+;
+
+neg_value:  MINUS value         { $$ = Tomboy::AST::make_operation(Tomboy::AST::make_integer(0), $2, Tomboy::Operations::SUB); }
 ;
 %%
 
