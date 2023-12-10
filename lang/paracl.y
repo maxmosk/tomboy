@@ -69,17 +69,17 @@ parser::token_type yylex(parser::semantic_type *yylval, Driver *driver);
 %token <int> INT_LITERAL
 %token <std::string *> ID
 
-%nterm<AST::pINode> statements
-%nterm<AST::pINode> statement
-%nterm<AST::pINode> if
-%nterm<AST::pINode> while
-%nterm<AST::pINode> assign
-%nterm<AST::pINode> print
-%nterm<AST::pINode> expression
-%nterm<AST::pINode> expression_eval
-%nterm<AST::pINode> term
-%nterm<AST::pINode> factor
-%nterm<AST::pINode> value
+%nterm<Tomboy::AST::pINode> statements
+%nterm<Tomboy::AST::pINode> statement
+%nterm<Tomboy::AST::pINode> if
+%nterm<Tomboy::AST::pINode> while
+%nterm<Tomboy::AST::pINode> assign
+%nterm<Tomboy::AST::pINode> print
+%nterm<Tomboy::AST::pINode> expression
+%nterm<Tomboy::AST::pINode> expression_eval
+%nterm<Tomboy::AST::pINode> term
+%nterm<Tomboy::AST::pINode> factor
+%nterm<Tomboy::AST::pINode> value
 
 %start program
 
@@ -87,10 +87,10 @@ parser::token_type yylex(parser::semantic_type *yylval, Driver *driver);
 
 %%
 program:    statements          { driver->setAST($1); }
-        |   %empty              { driver->setAST(AST::make_compound(nullptr, nullptr)); }
+        |   %empty              { driver->setAST(Tomboy::AST::make_compound(nullptr, nullptr)); }
 ;
 
-statements: statement statements { $$ = AST::make_compound($1, $2); }
+statements: statement statements { $$ = Tomboy::AST::make_compound($1, $2); }
         |   statement
 ;
 
@@ -101,26 +101,26 @@ statement:  print SCOLON
 ;
 
 if:         IF LEFT_PARENTHESS expression RIGHT_PARENTHESS
-                LEFT_BRACE statements RIGHT_BRACE { $$ = AST::make_if($3, $6); }
+                LEFT_BRACE statements RIGHT_BRACE { $$ = Tomboy::AST::make_if($3, $6); }
         |   IF LEFT_PARENTHESS expression RIGHT_PARENTHESS
-                LEFT_BRACE RIGHT_BRACE { $$ = AST::make_if($3, AST::make_compound(nullptr, nullptr)); }
+                LEFT_BRACE RIGHT_BRACE { $$ = Tomboy::AST::make_if($3, Tomboy::AST::make_compound(nullptr, nullptr)); }
 ;
 
 while:      WHILE LEFT_PARENTHESS expression RIGHT_PARENTHESS
-                LEFT_BRACE statements RIGHT_BRACE { $$ = AST::make_while($3, $6); }
+                LEFT_BRACE statements RIGHT_BRACE { $$ = Tomboy::AST::make_while($3, $6); }
         |   WHILE LEFT_PARENTHESS expression RIGHT_PARENTHESS
-                LEFT_BRACE RIGHT_BRACE { $$ = AST::make_while($3, AST::make_compound(nullptr, nullptr)); }
+                LEFT_BRACE RIGHT_BRACE { $$ = Tomboy::AST::make_while($3, Tomboy::AST::make_compound(nullptr, nullptr)); }
 ;
 
-print:      PRINT expression    { $$ = AST::make_print($2); }
+print:      PRINT expression    { $$ = Tomboy::AST::make_print($2); }
 ;
 
 assign:     ID EQUAL expression {
-                                    $$ = AST::make_assign($3, $1);
+                                    $$ = Tomboy::AST::make_assign($3, $1);
                                     delete $1;
                                 }
         |   ID EQUAL INPUT      {
-                                    $$ = AST::make_assign(AST::make_input(), $1);
+                                    $$ = Tomboy::AST::make_assign(Tomboy::AST::make_input(), $1);
                                     delete $1;
                                 }
 ;
@@ -129,13 +129,13 @@ expression: expression_eval
         |   assign
 ;
 
-expression_eval:    expression_eval PLUS  term { $$ = AST::make_operation($1, $3, AST::Operations::ADD); }
-                |   expression_eval MINUS term { $$ = AST::make_operation($1, $3, AST::Operations::SUB); }
+expression_eval:    expression_eval PLUS  term { $$ = Tomboy::AST::make_operation($1, $3, Tomboy::Operations::ADD); }
+                |   expression_eval MINUS term { $$ = Tomboy::AST::make_operation($1, $3, Tomboy::Operations::SUB); }
                 |   term
 ;
 
-term:       term MULT factor    { $$ = AST::make_operation($1, $3, AST::Operations::MUL); }
-        |   term DIV  factor    { $$ = AST::make_operation($1, $3, AST::Operations::DIV); }
+term:       term MULT factor    { $$ = Tomboy::AST::make_operation($1, $3, Tomboy::Operations::MUL); }
+        |   term DIV  factor    { $$ = Tomboy::AST::make_operation($1, $3, Tomboy::Operations::DIV); }
         |   factor
 ;
 
@@ -144,10 +144,10 @@ factor:     LEFT_PARENTHESS expression RIGHT_PARENTHESS { $$ = $2; }
 ;
 
 value:      ID                  {
-                                    $$ = AST::make_variable($1);
+                                    $$ = Tomboy::AST::make_variable($1);
                                     delete $1;
                                 }
-        |   INT_LITERAL         { $$ = AST::make_integer($1); }
+        |   INT_LITERAL         { $$ = Tomboy::AST::make_integer($1); }
 ;
 %%
 

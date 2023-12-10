@@ -6,6 +6,8 @@
 #include "inode.hpp"
 
 
+namespace Tomboy
+{
 namespace AST
 {
 namespace Node
@@ -23,7 +25,7 @@ public:
         std::optional<Int> right_val = right_->eval(table);
         if ((left_val == std::nullopt) || (right_val == std::nullopt))
         {
-            // TODO: exception
+            throw TomboyError{"operand hasn't value", __LINE__};
         }
 
         switch (op_)
@@ -43,13 +45,13 @@ public:
         case Operations::DIV:
             if (right_val.value() == 0)
             {
-                // TODO: exception
+                throw TomboyError{"division by zero", __LINE__};
             }
             res = left_val.value() / right_val.value();
             break;
         
         default:
-            // TODO: exception
+            throw TomboyError{"unknowen operation", __LINE__};
             break;
         }
 
@@ -80,7 +82,7 @@ public:
         std::optional<Int> value = left_->eval(table);
         if (value == std::nullopt)
         {
-            // TODO: exception
+            throw TomboyError{"operand hasn't value", __LINE__};
         }
 
         std::cout << value.value() << std::endl;
@@ -121,7 +123,7 @@ public:
 
         if (cond == std::nullopt)
         {
-            // TODO: exception
+            throw TomboyError{"condition hasn't value", __LINE__};
         }
 
         if (cond != 0)
@@ -153,7 +155,7 @@ public:
 
         if (cond == std::nullopt)
         {
-            // TODO: exception
+            throw TomboyError{"condition hasn't value", __LINE__};
         }
 
         return std::nullopt;
@@ -183,7 +185,7 @@ public:
         auto value = left_->eval(table);
         if (value == std::nullopt)
         {
-            // TODO: exception
+            throw TomboyError{"operand hasn't value", __LINE__};
         }
 
         table.assign(identifier_, value.value());
@@ -204,12 +206,13 @@ public:
         std::cin >> value;
         if (std::cin.fail())
         {
-            // TODO: exception
+            throw TomboyError{"std::cin failed to input", __LINE__};
         }
         return value;
     }
 };
 } // namespace Node
 } // namespace AST
+} // namespace Tomboy
 
 #endif // INODE_HPP_INCLUDED

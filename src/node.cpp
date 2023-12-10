@@ -1,6 +1,8 @@
 #include "node.hpp"
 
 
+namespace Tomboy
+{
 namespace AST
 {
 pINode make_integer(Int value)
@@ -37,7 +39,7 @@ pINode make_variable(std::string *identifier)
 {
     if (identifier == nullptr)
     {
-        // TODO: exception
+        throw TomboyError{"nullptr to variable identifier", __LINE__};
     }
 
     return new Node::Variable{*identifier};
@@ -47,7 +49,7 @@ pINode make_assign(pINode left, std::string *identifier)
 {
     if (identifier == nullptr)
     {
-        // TODO: exception
+        throw TomboyError{"nullptr to variable identifier", __LINE__};
     }
 
     return new Node::Assign{left, *identifier};
@@ -58,3 +60,4 @@ pINode make_input()
     return new Node::Input{};
 }
 } // namespace AST
+} // namespace Tomboy

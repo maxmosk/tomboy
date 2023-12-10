@@ -8,21 +8,11 @@
 #include <unordered_map>
 #include <vector>
 
+#include "except.hpp"
 
-namespace AST
+namespace Tomboy
 {
-class INode;
-
-using pINode = INode *;
 using Int = std::int32_t;
-
-enum class Operations
-{
-    ADD = 1,
-    SUB = 2,
-    MUL = 3,
-    DIV = 4
-};
 
 class SymTab
 {
@@ -59,7 +49,7 @@ public:
         }
         else
         {
-            // TODO: exception
+            throw TomboyError{"empty symtab stack", __LINE__};
         }
     }
 
@@ -78,6 +68,20 @@ public:
         return std::nullopt;
     }
 };
+
+enum class Operations
+{
+    ADD = 1,
+    SUB = 2,
+    MUL = 3,
+    DIV = 4
+};
+
+namespace AST
+{
+class INode;
+
+using pINode = INode *;
 
 class INode
 {
@@ -118,5 +122,6 @@ pINode make_assign(pINode left, std::string *identifier);
 
 pINode make_input();
 } // namespace AST
+} // namespace Tomboy
 
 #endif // INODE_HPP_INCLUDED

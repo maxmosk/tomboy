@@ -12,7 +12,7 @@ namespace yy
 {
 class Driver
 {
-    AST::pINode root_;
+    Tomboy::AST::pINode root_;
     TomboyLexer *plex_;
 
 public:
@@ -46,7 +46,7 @@ public:
         return !parser(this).parse();
     }
 
-    void setAST(AST::pINode root)
+    void setAST(Tomboy::AST::pINode root)
     {
         root_ = root;
     }
@@ -61,7 +61,7 @@ public:
         return plex_->get_line();
     }
 
-    AST::pINode getAST() const
+    Tomboy::AST::pINode getAST() const
     {
         return root_;
     }

@@ -7,7 +7,7 @@
 #include "driver.hpp"
 
 
-int main(int argc, char **argv)
+int main(int argc, char **argv) try
 {
     if (argc != 2)
     {
@@ -20,14 +20,24 @@ int main(int argc, char **argv)
     yy::Driver driver(lexer.get());
     if (driver.parse() == 0)
     {
-        std::cerr << "Execution failed. Your tomboy is sad." << std::endl;
         return EXIT_FAILURE;
     }
 
-    auto program = std::unique_ptr<AST::INode>{driver.getAST()};
-    AST::SymTab vars{};
+    auto program = std::unique_ptr<Tomboy::AST::INode>{driver.getAST()};
+    Tomboy::SymTab vars{};
     vars.push_scope();
     program->eval(vars);
 
     return EXIT_SUCCESS;
+}
+catch (const Tomboy::TomboyError &except)
+{
+    std::printf("TomboyError: \"%s\" on %zu:%zu (Tomboy source line %zu)\n",
+            except.what(), except.line(), except.column(), except.source_line());
+    return EXIT_FAILURE;
+}
+catch (...)
+{
+    std::printf("Something went wrong...\n");
+    return EXIT_FAILURE;
 }
