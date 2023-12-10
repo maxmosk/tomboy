@@ -153,7 +153,6 @@ value:      ID                  {
 
 
 namespace yy {
-
 parser::token_type yylex(parser::semantic_type *yylval, Driver *driver)
 {
     return driver->yylex(yylval);
@@ -161,6 +160,6 @@ parser::token_type yylex(parser::semantic_type *yylval, Driver *driver)
 
 void parser::error(const std::string&)
 {
-
+    std::cerr << "Parsing error on " << driver->get_line() << ":" << driver->get_column() << std::endl;
 }
 }

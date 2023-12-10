@@ -2,7 +2,7 @@
 #include <fstream>
 #include <memory>
 
-#include <FlexLexer.h>
+#include <lexer.hpp>
 
 #include "driver.hpp"
 
@@ -16,7 +16,7 @@ int main(int argc, char **argv)
     }
 
     std::ifstream source(argv[1]);
-    auto lexer = std::make_unique<yyFlexLexer>(&source);
+    auto lexer = std::make_unique<TomboyLexer>(&source);
     yy::Driver driver(lexer.get());
     if (driver.parse() == 0)
     {

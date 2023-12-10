@@ -4,20 +4,19 @@
 #include <string>
 #include <cstring>
 
-#include <FlexLexer.h>
+#include "lexer.hpp"
 
 #include "paracl.tab.hh"
 
 namespace yy
 {
-
 class Driver
 {
     AST::pINode root_;
-    FlexLexer *plex_;
+    TomboyLexer *plex_;
 
 public:
-    Driver(FlexLexer *plex) : plex_(plex) {}
+    Driver(TomboyLexer *plex) : plex_(plex) {}
 
     parser::token_type yylex(parser::semantic_type *yylval)
     {
@@ -32,6 +31,13 @@ public:
             yylval->as<std::string *>() = new std::string{plex_->YYText(),
                     static_cast<std::size_t>(plex_->YYLeng())};
         }
+        else if (tt == parser::token_type::ERROR)
+        {
+            std::cerr << "Lexing error on line " << plex_->lineno() << ":" << std::endl;
+            std::cerr << "    Unknowen token ";
+            std::cerr.write(plex_->YYText(), plex_->YYLeng());
+            std::cerr << std::endl;
+        }
 
         return tt;
     }
@@ -45,12 +51,21 @@ public:
         root_ = root;
     }
 
+    std::size_t get_column()
+    {
+        return plex_->get_column();
+    }
+
+    std::size_t get_line()
+    {
+        return plex_->get_line();
+    }
+
     AST::pINode getAST() const
     {
         return root_;
     }
 };
-
 } // namespace yy
 
 #endif // DRIVER_HPP_INCLUDED

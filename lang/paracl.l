@@ -1,14 +1,19 @@
 %option c++
 %option yylineno
 %option noyywrap
+%option yyclass="TomboyLexer"
 
 
 %{
+#include "lexer.hpp"
+
 #include "paracl.tab.hh"
+
+#define YY_USER_ACTION token_action();
 %}
 
 
-WHITE_SPACE     [ \t\n\v]+
+WHITE_SPACE     [ \t\v]+
 DIGIT0          [0-9]
 ID              [A-Za-z_][0-9A-Za-z_]*
 
@@ -16,6 +21,7 @@ ID              [A-Za-z_][0-9A-Za-z_]*
 %%
 
 {WHITE_SPACE}       /* skip all spaces/tabs/other */
+"\n"                process_newline();
 "if"                return yy::parser::token_type::IF;
 "while"             return yy::parser::token_type::WHILE;
 "print"             return yy::parser::token_type::PRINT;
