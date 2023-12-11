@@ -99,6 +99,7 @@ statement:  print SCOLON
         |   if
         |   while
         |   expression SCOLON
+        |   SCOLON              { $$ = Tomboy::AST::make_compound(nullptr, nullptr); }
 ;
 
 if:         IF LEFT_PARENTHESS expression RIGHT_PARENTHESS
