@@ -121,10 +121,6 @@ assign:     ID EQUAL expression {
                                     $$ = Tomboy::AST::make_assign($3, $1);
                                     delete $1;
                                 }
-        |   ID EQUAL INPUT      {
-                                    $$ = Tomboy::AST::make_assign(Tomboy::AST::make_input(), $1);
-                                    delete $1;
-                                }
 ;
 
 expression: expression_eval
@@ -150,6 +146,7 @@ value:      ID                  {
                                     delete $1;
                                 }
         |   INT_LITERAL         { $$ = Tomboy::AST::make_integer($1); }
+        |   INPUT               { $$ = Tomboy::AST::make_input(); }
         |   neg_value
 ;
 
