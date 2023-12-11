@@ -59,5 +59,10 @@ pINode make_input()
 {
     return new Node::Input{};
 }
+
+pINode make_unary(pINode expr, Operations op)
+{
+    return new Node::Unary{expr, op};
+}
 } // namespace AST
 } // namespace Tomboy

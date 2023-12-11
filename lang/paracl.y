@@ -34,7 +34,16 @@ parser::token_type yylex(parser::semantic_type *yylval, Driver *driver);
     MINUS
     MULT
     DIV
+    NOT
+
     EQUAL
+    IS_EQUAL
+    NOT_EQUAL
+    GREATER
+    LESS
+    GREATER_OR_EQUAL
+    LESS_OR_EQUAL
+
     SCOLON
     INPUT
     IF
@@ -59,11 +68,12 @@ parser::token_type yylex(parser::semantic_type *yylval, Driver *driver);
 %nterm<Tomboy::AST::pINode> assign
 %nterm<Tomboy::AST::pINode> print
 %nterm<Tomboy::AST::pINode> expression
+%nterm<Tomboy::AST::pINode> expression_compare
 %nterm<Tomboy::AST::pINode> expression_eval
 %nterm<Tomboy::AST::pINode> term
 %nterm<Tomboy::AST::pINode> factor
 %nterm<Tomboy::AST::pINode> value
-%nterm<Tomboy::AST::pINode> neg_value
+%nterm<Tomboy::AST::pINode> unary
 %nterm<Tomboy::AST::pINode> block
 
 %start program
@@ -114,8 +124,23 @@ assign:     ID EQUAL expression {
                                 }
 ;
 
-expression: expression_eval
+expression: expression_compare
         |   assign
+;
+
+expression_compare: expression_eval
+        |   expression_eval IS_EQUAL expression_eval
+                { $$ = Tomboy::AST::make_operation($1, $3, Tomboy::Operations::EQ); }
+        |   expression_eval NOT_EQUAL expression_eval
+                { $$ = Tomboy::AST::make_operation($1, $3, Tomboy::Operations::NEQ); }
+        |   expression_eval GREATER expression_eval
+                { $$ = Tomboy::AST::make_operation($1, $3, Tomboy::Operations::GT); }
+        |   expression_eval LESS expression_eval
+                { $$ = Tomboy::AST::make_operation($1, $3, Tomboy::Operations::LT); }
+        |   expression_eval GREATER_OR_EQUAL expression_eval
+                { $$ = Tomboy::AST::make_operation($1, $3, Tomboy::Operations::GE); }
+        |   expression_eval LESS_OR_EQUAL expression_eval
+                { $$ = Tomboy::AST::make_operation($1, $3, Tomboy::Operations::LE); }
 ;
 
 expression_eval:    expression_eval PLUS  term { $$ = Tomboy::AST::make_operation($1, $3, Tomboy::Operations::ADD); }
@@ -138,10 +163,11 @@ value:      ID                  {
                                 }
         |   INT_LITERAL         { $$ = Tomboy::AST::make_integer($1); }
         |   INPUT               { $$ = Tomboy::AST::make_input(); }
-        |   neg_value
+        |   unary
 ;
 
-neg_value:  MINUS value         { $$ = Tomboy::AST::make_operation(Tomboy::AST::make_integer(0), $2, Tomboy::Operations::SUB); }
+unary:      MINUS value         { $$ = Tomboy::AST::make_unary($2, Tomboy::Operations::NEG); }
+        |   NOT value           { $$ = Tomboy::AST::make_unary($2, Tomboy::Operations::NOT); }
 ;
 %%
 

@@ -49,7 +49,31 @@ public:
             }
             res = left_val.value() / right_val.value();
             break;
+
+        case Operations::EQ:
+            res = left_val.value() == right_val.value();
+            break;
         
+        case Operations::NEQ:
+            res = left_val.value() != right_val.value();
+            break;
+        
+        case Operations::GT:
+            res = left_val.value() > right_val.value();
+            break;
+
+        case Operations::LT:
+            res = left_val.value() < right_val.value();
+            break;
+
+        case Operations::GE:
+            res = left_val.value() >= right_val.value();
+            break;
+
+        case Operations::LE:
+            res = left_val.value() <= right_val.value();
+            break;
+
         default:
             throw TomboyError{"unknowen operation", __LINE__};
             break;
@@ -221,6 +245,40 @@ public:
             throw TomboyError{"std::cin failed to input", __LINE__};
         }
         return value;
+    }
+};
+
+class Unary final : public INode
+{
+    Operations op_;
+public:
+    Unary(pINode expr, Operations op) : INode{expr, nullptr}, op_{op} {}
+
+    virtual std::optional<Int> eval(SymTab &table) const override
+    {
+        Int res = 0;
+        std::optional<Int> left_val = left_->eval(table);
+        if (left_val == std::nullopt)
+        {
+            throw TomboyError{"operand hasn't value", __LINE__};
+        }
+
+        switch (op_)
+        {
+        case Operations::NEG:
+            res = -left_val.value();
+            break;
+
+        case Operations::NOT:
+            res = !left_val.value();
+            break;
+
+        default:
+            throw TomboyError{"unknowen operation", __LINE__};
+            break;
+        }
+
+        return res;
     }
 };
 } // namespace Node

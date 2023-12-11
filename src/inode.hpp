@@ -74,7 +74,17 @@ enum class Operations
     ADD = 1,
     SUB = 2,
     MUL = 3,
-    DIV = 4
+    DIV = 4,
+
+    NEG = 5,
+    NOT = 6,
+
+    EQ  = 7,
+    NEQ = 8,
+    GT  = 9,
+    LT  = 10,
+    GE  = 11,
+    LE  = 12
 };
 
 namespace AST
@@ -121,6 +131,8 @@ pINode make_variable(std::string *identifier);
 pINode make_assign(pINode expr, std::string *identifier);
 
 pINode make_input();
+
+pINode make_unary(pINode value, Operations op);
 } // namespace AST
 } // namespace Tomboy
 
