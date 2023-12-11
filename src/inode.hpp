@@ -108,17 +108,17 @@ pINode make_integer(Int value);
 
 pINode make_operation(pINode left, pINode right, Operations op);
 
-pINode make_print(pINode left);
+pINode make_print(pINode expr);
 
-pINode make_compound(pINode left, pINode right);
+pINode make_compound(pINode first, pINode second);
 
-pINode make_if(pINode left, pINode right);
+pINode make_if(pINode cond, pINode then_branch, pINode else_branch = nullptr);
 
-pINode make_while(pINode left, pINode right);
+pINode make_while(pINode cond, pINode body);
 
 pINode make_variable(std::string *identifier);
 
-pINode make_assign(pINode left, std::string *identifier);
+pINode make_assign(pINode expr, std::string *identifier);
 
 pINode make_input();
 } // namespace AST

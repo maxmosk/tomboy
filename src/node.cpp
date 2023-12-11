@@ -15,24 +15,24 @@ pINode make_operation(pINode left, pINode right, Operations op)
     return new Node::Operation{left, right, op};
 }
 
-pINode make_print(pINode left)
+pINode make_print(pINode expr)
 {
-    return new Node::Print{left};
+    return new Node::Print{expr};
 }
 
-pINode make_compound(pINode left, pINode right)
+pINode make_compound(pINode first, pINode second)
 {
-    return new Node::Compound{left, right};
+    return new Node::Compound{first, second};
 }
 
-pINode make_if(pINode left, pINode right)
+pINode make_if(pINode cond, pINode then_branch, pINode else_branch)
 {
-    return new Node::If{left, right};
+    return new Node::If{cond, then_branch, else_branch};
 }
 
-pINode make_while(pINode left, pINode right)
+pINode make_while(pINode cond, pINode body)
 {
-    return new Node::While{left, right};
+    return new Node::While{cond, body};
 }
 
 pINode make_variable(std::string *identifier)
@@ -45,14 +45,14 @@ pINode make_variable(std::string *identifier)
     return new Node::Variable{*identifier};
 }
 
-pINode make_assign(pINode left, std::string *identifier)
+pINode make_assign(pINode expr, std::string *identifier)
 {
     if (identifier == nullptr)
     {
         throw TomboyError{"nullptr to variable identifier", __LINE__};
     }
 
-    return new Node::Assign{left, *identifier};
+    return new Node::Assign{expr, *identifier};
 }
 
 pINode make_input()

@@ -23,9 +23,10 @@ ID              [A-Za-z_][0-9A-Za-z_]*
 {WHITE_SPACE}       /* skip all spaces/tabs/other */
 "\n"                process_newline();
 "if"                return yy::parser::token_type::IF;
+"else"              return yy::parser::token_type::ELSE;
 "while"             return yy::parser::token_type::WHILE;
 "print"             return yy::parser::token_type::PRINT;
-{DIGIT0}+      return yy::parser::token_type::INT_LITERAL;
+{DIGIT0}+           return yy::parser::token_type::INT_LITERAL;
 {ID}                return yy::parser::token_type::ID;
 ";"                 return yy::parser::token_type::SCOLON;
 "="                 return yy::parser::token_type::EQUAL;

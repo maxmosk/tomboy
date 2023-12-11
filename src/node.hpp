@@ -114,12 +114,13 @@ public:
 
 class If final : public INode
 {
+    pINode cond_;
 public:
-    If(pINode cond, pINode right) : INode{cond, right} {}
+    If(pINode cond, pINode left, pINode right) : INode{left, right}, cond_{cond} {}
 
     virtual std::optional<Int> eval(SymTab &table) const override
     {
-        auto cond = left_->eval(table);
+        auto cond = cond_->eval(table);
 
         if (cond == std::nullopt)
         {
@@ -129,11 +130,22 @@ public:
         if (cond != 0)
         {
             table.push_scope();
+            left_->eval(table);
+            table.pop_scope();
+        }
+        else if (right_ != nullptr)
+        {
+            table.push_scope();
             right_->eval(table);
             table.pop_scope();
         }
 
         return std::nullopt;
+    }
+
+    virtual ~If()
+    {
+        delete cond_;
     }
 };
 

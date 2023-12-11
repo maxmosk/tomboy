@@ -1,22 +1,3 @@
-/* ----------------------------------------
- *
- * Syntax description:
- * program    -> statement; program | empty
- * statement  -> if | while | assign | print
- * if         -> IF LEFT_PARENTHESS expression RIGHT_PARENTHESS
- *                  LEFT_BRACE program RIGHT_BRACE
- * while      -> WHILE LEFT_PARENTHESS expression RIGHT_PARENTHESS
- *                  LEFT_BRACE program RIGHT_BRACE
- * print      -> PRINT expression
- * assign     -> ID EQUAL (expression | INPUT)
- * expression -> expression (PLUS | MINUS) term | term
- * term       -> term (MULT | DIV) factor | factor
- * factor     -> LEFT_PARENTHESS expression RIGHT_PARENTHESS | value
- * value      -> ID | INT_LITERAL
- *
- * ---------------------------------------- */
-
-
 %require  "3.2"
 %language "c++"
 %skeleton "lalr1.cc"
@@ -57,6 +38,8 @@ parser::token_type yylex(parser::semantic_type *yylval, Driver *driver);
     SCOLON
     INPUT
     IF
+    THEN
+    ELSE
     WHILE
     PRINT
     LEFT_PARENTHESS
@@ -81,10 +64,13 @@ parser::token_type yylex(parser::semantic_type *yylval, Driver *driver);
 %nterm<Tomboy::AST::pINode> factor
 %nterm<Tomboy::AST::pINode> value
 %nterm<Tomboy::AST::pINode> neg_value
+%nterm<Tomboy::AST::pINode> block
 
 %start program
 
 %left PLUS MINUS MULT DIV
+%nonassoc THEN
+%nonassoc ELSE
 
 %%
 program:    statements          { driver->setAST($1); }
@@ -100,18 +86,23 @@ statement:  print SCOLON
         |   while
         |   expression SCOLON
         |   SCOLON              { $$ = Tomboy::AST::make_compound(nullptr, nullptr); }
+        |   block
 ;
 
+block:      LEFT_BRACE statements RIGHT_BRACE { $$ = $2; }
+        |   LEFT_BRACE RIGHT_BRACE { $$ = Tomboy::AST::make_compound(nullptr, nullptr); }
+
 if:         IF LEFT_PARENTHESS expression RIGHT_PARENTHESS
-                LEFT_BRACE statements RIGHT_BRACE { $$ = Tomboy::AST::make_if($3, $6); }
+                statement %prec THEN    { $$ = Tomboy::AST::make_if($3, $5); }
         |   IF LEFT_PARENTHESS expression RIGHT_PARENTHESS
-                LEFT_BRACE RIGHT_BRACE { $$ = Tomboy::AST::make_if($3, Tomboy::AST::make_compound(nullptr, nullptr)); }
+                statement
+            ELSE
+                statement               { $$ = Tomboy::AST::make_if($3, $5, $7); }
+
 ;
 
 while:      WHILE LEFT_PARENTHESS expression RIGHT_PARENTHESS
-                LEFT_BRACE statements RIGHT_BRACE { $$ = Tomboy::AST::make_while($3, $6); }
-        |   WHILE LEFT_PARENTHESS expression RIGHT_PARENTHESS
-                LEFT_BRACE RIGHT_BRACE { $$ = Tomboy::AST::make_while($3, Tomboy::AST::make_compound(nullptr, nullptr)); }
+                statement { $$ = Tomboy::AST::make_while($3, $5); }
 ;
 
 print:      PRINT expression    { $$ = Tomboy::AST::make_print($2); }
