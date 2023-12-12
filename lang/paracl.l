@@ -16,11 +16,13 @@
 WHITE_SPACE     [ \t\v]+
 DIGIT0          [0-9]
 ID              [A-Za-z_][0-9A-Za-z_]*
+COMMENT         "//"[^"\n"]*"\n"
 
 
 %%
 
 {WHITE_SPACE}       /* skip all spaces/tabs/other */
+{COMMENT}           /* ignore all comments */
 "\n"                process_newline();
 "if"                return yy::parser::token_type::IF;
 "else"              return yy::parser::token_type::ELSE;

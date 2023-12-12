@@ -26,4 +26,5 @@ add_executable(tomboy
     ${FLEX_scanner_OUTPUTS}
     ${BISON_parser_OUTPUTS}
             )
+
 target_compile_features(tomboy PRIVATE cxx_std_20)
