@@ -16,9 +16,15 @@ int main(int argc, char **argv) try
     }
 
     std::ifstream source(argv[1]);
+    if (!source.is_open())
+    {
+        std::cerr << "Cannot open file: " << argv[1] << std::endl;
+        return EXIT_FAILURE;
+    }
+
     auto lexer = std::make_unique<TomboyLexer>(&source);
     yy::Driver driver(lexer.get());
-    if (driver.parse() == 0)
+    if (!driver.parse())
     {
         return EXIT_FAILURE;
     }
