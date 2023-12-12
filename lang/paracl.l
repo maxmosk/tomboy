@@ -43,6 +43,7 @@ COMMENT         "//"[^"\n"]*"\n"
 "-"                 return yy::parser::token_type::MINUS;
 "*"                 return yy::parser::token_type::MULT;
 "/"                 return yy::parser::token_type::DIV;
+"%"                 return yy::parser::token_type::MOD;
 "!"                 return yy::parser::token_type::NOT;
 "("                 return yy::parser::token_type::LEFT_PARENTHESS;
 ")"                 return yy::parser::token_type::RIGHT_PARENTHESS;

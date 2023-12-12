@@ -50,6 +50,14 @@ public:
             res = left_val.value() / right_val.value();
             break;
 
+        case Operations::MOD:
+            if (right_val.value() == 0)
+            {
+                throw TomboyError{"division by zero", __LINE__};
+            }
+            res = left_val.value() % right_val.value();
+            break;
+
         case Operations::EQ:
             res = left_val.value() == right_val.value();
             break;

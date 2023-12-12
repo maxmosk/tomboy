@@ -75,16 +75,17 @@ enum class Operations
     SUB = 2,
     MUL = 3,
     DIV = 4,
+    MOD = 5,
 
-    NEG = 5,
-    NOT = 6,
+    NEG = 6,
+    NOT = 7,
 
-    EQ  = 7,
-    NEQ = 8,
-    GT  = 9,
-    LT  = 10,
-    GE  = 11,
-    LE  = 12
+    EQ  = 8,
+    NEQ = 9,
+    GT  = 10,
+    LT  = 11,
+    GE  = 12,
+    LE  = 13
 };
 
 namespace AST

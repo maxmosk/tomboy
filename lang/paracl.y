@@ -34,6 +34,7 @@ parser::token_type yylex(parser::semantic_type *yylval, Driver *driver);
     MINUS
     MULT
     DIV
+    MOD
     NOT
 
     EQUAL
@@ -150,6 +151,7 @@ expression_eval:    expression_eval PLUS  term { $$ = Tomboy::AST::make_operatio
 
 term:       term MULT factor    { $$ = Tomboy::AST::make_operation($1, $3, Tomboy::Operations::MUL); }
         |   term DIV  factor    { $$ = Tomboy::AST::make_operation($1, $3, Tomboy::Operations::DIV); }
+        |   term MOD  factor    { $$ = Tomboy::AST::make_operation($1, $3, Tomboy::Operations::MOD); }
         |   factor
 ;
 
