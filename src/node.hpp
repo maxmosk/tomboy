@@ -289,6 +289,39 @@ public:
         return res;
     }
 };
+
+class Logical final : public INode
+{
+    Operations op_;
+public:
+    Logical(pINode left, pINode right, Operations op) : INode{left, right}, op_{op} {}
+
+    virtual std::optional<Int> eval(SymTab &table) const override try
+    {
+        Int res = 0;
+
+        switch (op_)
+        {
+        case Operations::AND:
+            res = left_->eval(table).value() && right_->eval(table).value();
+            break;
+
+        case Operations::OR:
+            res = left_->eval(table).value() || right_->eval(table).value();
+            break;
+
+        default:
+            throw TomboyError{"unknowen operation", __LINE__};
+            break;
+        }
+
+        return res;
+    }
+    catch (std::bad_optional_access &except)
+    {
+        throw TomboyError{"operand hasn't value", __LINE__};
+    }
+};
 } // namespace Node
 } // namespace AST
 } // namespace Tomboy

@@ -38,6 +38,8 @@ COMMENT         "//"[^"\n"]*"\n"
 "<"                 return yy::parser::token_type::LESS;
 ">="                return yy::parser::token_type::GREATER_OR_EQUAL;
 "<="                return yy::parser::token_type::LESS_OR_EQUAL;
+"&&"                return yy::parser::token_type::AND;
+"||"                return yy::parser::token_type::OR;
 "?"                 return yy::parser::token_type::INPUT;
 "+"                 return yy::parser::token_type::PLUS;
 "-"                 return yy::parser::token_type::MINUS;

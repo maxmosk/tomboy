@@ -64,5 +64,10 @@ pINode make_unary(pINode expr, Operations op)
 {
     return new Node::Unary{expr, op};
 }
+
+pINode make_logical(pINode left, pINode right, Operations op)
+{
+    return new Node::Logical{left, right, op};
+}
 } // namespace AST
 } // namespace Tomboy

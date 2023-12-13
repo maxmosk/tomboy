@@ -85,7 +85,10 @@ enum class Operations
     GT  = 10,
     LT  = 11,
     GE  = 12,
-    LE  = 13
+    LE  = 13,
+
+    AND = 14,
+    OR  = 15
 };
 
 namespace AST
@@ -134,6 +137,8 @@ pINode make_assign(pINode expr, std::string *identifier);
 pINode make_input();
 
 pINode make_unary(pINode value, Operations op);
+
+pINode make_logical(pINode left, pINode right, Operations op);
 } // namespace AST
 } // namespace Tomboy
 

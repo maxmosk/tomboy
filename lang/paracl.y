@@ -44,6 +44,8 @@ parser::token_type yylex(parser::semantic_type *yylval, Driver *driver);
     LESS
     GREATER_OR_EQUAL
     LESS_OR_EQUAL
+    AND
+    OR
 
     SCOLON
     INPUT
@@ -66,11 +68,13 @@ parser::token_type yylex(parser::semantic_type *yylval, Driver *driver);
 %nterm<Tomboy::AST::pINode> statement
 %nterm<Tomboy::AST::pINode> if
 %nterm<Tomboy::AST::pINode> while
-%nterm<Tomboy::AST::pINode> assign
 %nterm<Tomboy::AST::pINode> print
 %nterm<Tomboy::AST::pINode> expression
 %nterm<Tomboy::AST::pINode> expression_compare
+%nterm<Tomboy::AST::pINode> expression_equal
 %nterm<Tomboy::AST::pINode> expression_eval
+%nterm<Tomboy::AST::pINode> expression_and
+%nterm<Tomboy::AST::pINode> expression_or
 %nterm<Tomboy::AST::pINode> term
 %nterm<Tomboy::AST::pINode> factor
 %nterm<Tomboy::AST::pINode> value
@@ -119,34 +123,42 @@ while:      WHILE LEFT_PARENTHESS expression RIGHT_PARENTHESS
 print:      PRINT expression    { $$ = Tomboy::AST::make_print($2); }
 ;
 
-assign:     ID EQUAL expression {
+expression: expression_or
+        |   ID EQUAL expression {
                                     $$ = Tomboy::AST::make_assign($3, $1);
                                     delete $1;
                                 }
 ;
 
-expression: expression_compare
-        |   assign
+expression_compare: expression_eval
+        |   expression_compare GREATER expression_eval
+                { $$ = Tomboy::AST::make_operation($1, $3, Tomboy::Operations::GT); }
+        |   expression_compare LESS expression_eval
+                { $$ = Tomboy::AST::make_operation($1, $3, Tomboy::Operations::LT); }
+        |   expression_compare GREATER_OR_EQUAL expression_eval
+                { $$ = Tomboy::AST::make_operation($1, $3, Tomboy::Operations::GE); }
+        |   expression_compare LESS_OR_EQUAL expression_eval
+                { $$ = Tomboy::AST::make_operation($1, $3, Tomboy::Operations::LE); }
 ;
 
-expression_compare: expression_eval
-        |   expression_eval IS_EQUAL expression_eval
+expression_equal:   expression_compare
+                |   expression_equal IS_EQUAL  expression_compare
                 { $$ = Tomboy::AST::make_operation($1, $3, Tomboy::Operations::EQ); }
-        |   expression_eval NOT_EQUAL expression_eval
+                |   expression_equal NOT_EQUAL expression_compare
                 { $$ = Tomboy::AST::make_operation($1, $3, Tomboy::Operations::NEQ); }
-        |   expression_eval GREATER expression_eval
-                { $$ = Tomboy::AST::make_operation($1, $3, Tomboy::Operations::GT); }
-        |   expression_eval LESS expression_eval
-                { $$ = Tomboy::AST::make_operation($1, $3, Tomboy::Operations::LT); }
-        |   expression_eval GREATER_OR_EQUAL expression_eval
-                { $$ = Tomboy::AST::make_operation($1, $3, Tomboy::Operations::GE); }
-        |   expression_eval LESS_OR_EQUAL expression_eval
-                { $$ = Tomboy::AST::make_operation($1, $3, Tomboy::Operations::LE); }
 ;
 
 expression_eval:    expression_eval PLUS  term { $$ = Tomboy::AST::make_operation($1, $3, Tomboy::Operations::ADD); }
                 |   expression_eval MINUS term { $$ = Tomboy::AST::make_operation($1, $3, Tomboy::Operations::SUB); }
                 |   term
+;
+
+expression_and:     expression_and AND expression_equal { $$ = Tomboy::AST::make_logical($1, $3, Tomboy::Operations::AND); }
+                |   expression_equal
+;
+
+expression_or:      expression_or OR expression_and { $$ = Tomboy::AST::make_logical($1, $3, Tomboy::Operations::OR); }
+                |   expression_and
 ;
 
 term:       term MULT factor    { $$ = Tomboy::AST::make_operation($1, $3, Tomboy::Operations::MUL); }
