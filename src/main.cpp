@@ -36,14 +36,29 @@ int main(int argc, char **argv) try
 
     return EXIT_SUCCESS;
 }
-catch (const Tomboy::TomboyError &except)
+catch (const Tomboy::GenericError &except)
 {
-    std::printf("TomboyError: \"%s\" on %zu:%zu (Tomboy source line %zu)\n",
+    if ((except.column() != 0) && (except.line() != 0))
+    {
+        std::fprintf(stderr, "GenericError: \"%s\" on %zu:%zu (Tomboy source line %zu)\n",
             except.what(), except.line(), except.column(), except.source_line());
+    }
+    else
+    {
+        std::fprintf(stderr, "GenericError: \"%s\" (Tomboy source line %zu)\n",
+            except.what(), except.source_line());
+    }
+    
+    return EXIT_FAILURE;
+}
+catch (const std::runtime_error &except)
+{
+    std::fprintf(stderr, "std::runtime_error: \"%s\"", except.what());
     return EXIT_FAILURE;
 }
 catch (...)
 {
-    std::printf("Something went wrong...\n");
+    std::fprintf(stderr, "Something went wrong...\n"
+                         "Implement better error reporting or have sex with debug!\n");
     return EXIT_FAILURE;
 }

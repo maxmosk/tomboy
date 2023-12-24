@@ -39,7 +39,7 @@ pINode make_variable(std::string *identifier)
 {
     if (identifier == nullptr)
     {
-        throw TomboyError{"nullptr to variable identifier", __LINE__};
+        throw GenericError{"nullptr to variable identifier", __LINE__};
     }
 
     return new Node::Variable{*identifier};
@@ -49,7 +49,7 @@ pINode make_assign(pINode expr, std::string *identifier)
 {
     if (identifier == nullptr)
     {
-        throw TomboyError{"nullptr to variable identifier", __LINE__};
+        throw GenericError{"nullptr to variable identifier", __LINE__};
     }
 
     return new Node::Assign{expr, *identifier};

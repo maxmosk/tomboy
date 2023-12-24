@@ -34,7 +34,7 @@ public:
         else if (tt == parser::token_type::ERROR)
         {
             std::cerr << "Lexing error on line " << plex_->lineno() << ":" << std::endl;
-            std::cerr << "    Unknowen token ";
+            std::cerr << "    Unknown token ";
             std::cerr.write(plex_->YYText(), plex_->YYLeng());
             std::cerr << std::endl;
         }

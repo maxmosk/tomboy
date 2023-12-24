@@ -49,11 +49,11 @@ public:
         }
         else
         {
-            throw TomboyError{"empty symtab stack", __LINE__};
+            throw GenericError{"Empty variable table", __LINE__};
         }
     }
 
-    std::optional<Int> value_of(const std::string &id) const
+    Int value_of(const std::string &id) const
     {
         auto end_it = tables_.crend();
         for (auto it = tables_.crbegin(); it != end_it; ++it)
@@ -65,8 +65,9 @@ public:
             }
         }
 
-        return std::nullopt;
+        throw UndefinedVariable(__LINE__);
     }
+
 };
 
 enum class Operations
@@ -105,7 +106,8 @@ protected:
 public:
     virtual std::optional<Int> eval(SymTab &table) const = 0;
 
-    INode(pINode left, pINode right) : left_{left}, right_{right} {}
+    INode(pINode left, pINode right)
+        : left_{left}, right_{right} {}
     INode(const INode &) = delete;
     INode(const INode &&) = delete;
     INode &operator=(const INode &) = delete;
