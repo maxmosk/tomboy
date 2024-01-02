@@ -122,8 +122,29 @@ protected:
         return right_->eval(table);
     }
 
+    const pINode get_left() const
+    {
+        return left_;
+    }
+
+    const pINode get_right() const
+    {
+        return right_;
+    }
+
+    void dump_left(std::ostream &os) const
+    {
+        left_->dump(os);
+    }
+
+    void dump_right(std::ostream &os) const
+    {
+        right_->dump(os);
+    }
+
 public:
     virtual std::optional<Int> eval(SymTab &table) const = 0;
+    virtual void dump(std::ostream &os) const = 0;
 
     INode(pINode left, pINode right)
         : left_{left}, right_{right} {}

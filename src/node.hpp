@@ -90,6 +90,21 @@ public:
     {
         throw GenericError{"operand hasn't value", __LINE__};
     }
+
+    virtual void dump(std::ostream &os) const
+    {
+        os << "node" << this << "[" << "label=Operation" << "];\n";
+        if (has_left())
+        {
+            os << "node" << this << "--" << "node" << get_left() << ";\n";
+            dump_left(os);
+        }
+        if (has_right())
+        {
+            os << "node" << this << "--" << "node" << get_right() << ";\n";
+            dump_right(os);
+        }
+    }
 };
 
 class Integer final : public INode
@@ -103,11 +118,15 @@ public:
     {
         return value_;
     }
+
+    virtual void dump(std::ostream &os) const
+    {
+        os << "node" << this << "[" << "label=Integer" << "];\n";
+    }
 };
 
 class Print final : public INode
 {
-    Int value_;
 public:
     Print(pINode left)
         : INode{left, nullptr} {}
@@ -123,6 +142,16 @@ public:
     catch (const std::bad_optional_access &except)
     {
         throw GenericError{"operand hasn't value", __LINE__};
+    }
+
+    virtual void dump(std::ostream &os) const
+    {
+        os << "node" << this << "[" << "label=Print" << "];\n";
+        if (has_left())
+        {
+            os << "node" << this << "--" << "node" << get_left() << ";\n";
+            dump_left(os);
+        }
     }
 };
 
@@ -145,6 +174,21 @@ public:
         }
 
         return std::nullopt;
+    }
+
+    virtual void dump(std::ostream &os) const
+    {
+        os << "node" << this << "[" << "label=Compound" << "];\n";
+        if (has_left())
+        {
+            os << "node" << this << "--" << "node" << get_left() << ";\n";
+            dump_left(os);
+        }
+        if (has_right())
+        {
+            os << "node" << this << "--" << "node" << get_right() << ";\n";
+            dump_right(os);
+        }
     }
 };
 
@@ -179,6 +223,26 @@ public:
         throw GenericError{"condition hasn't value", __LINE__};
     }
 
+    virtual void dump(std::ostream &os) const
+    {
+        os << "node" << this << "[" << "label=If" << "];\n";
+        if (cond_ != nullptr)
+        {
+            os << "node" << this << "--" << "node" << cond_ << ";\n";
+            cond_->dump(os);
+        }
+        if (has_left())
+        {
+            os << "node" << this << "--" << "node" << get_left() << ";\n";
+            dump_left(os);
+        }
+        if (has_right())
+        {
+            os << "node" << this << "--" << "node" << get_right() << ";\n";
+            dump_right(os);
+        }
+    }
+
     ~If()
     {
         delete cond_;
@@ -209,6 +273,21 @@ public:
 
         return std::nullopt;
     }
+
+    virtual void dump(std::ostream &os) const
+    {
+        os << "node" << this << "[" << "label=While" << "];\n";
+        if (has_left())
+        {
+            os << "node" << this << "--" << "node" << get_left() << ";\n";
+            dump_left(os);
+        }
+        if (has_right())
+        {
+            os << "node" << this << "--" << "node" << get_right() << ";\n";
+            dump_right(os);
+        }
+    }
 };
 
 class Variable final : public INode
@@ -227,6 +306,11 @@ public:
         std::fprintf(stdout, "Undefined variable \"%s\" on %zu:%zu (Tomboy source line %zu)\n",
                 identifier_.c_str(), static_cast<std::size_t>(0), static_cast<std::size_t>(0), except.source_line());
         throw UndefinedVariable(except.source_line(), 0, 0);
+    }
+
+    virtual void dump(std::ostream &os) const
+    {
+        os << "node" << this << "[" << "label=Variable" << "];\n";
     }
 };
 
@@ -249,11 +333,20 @@ public:
     {
         throw GenericError{"operand hasn't value", __LINE__};
     }
+
+    virtual void dump(std::ostream &os) const
+    {
+        os << "node" << this << "[" << "label=Assign" << "];\n";
+        if (has_left())
+        {
+            os << "node" << this << "--" << "node" << get_left() << ";\n";
+            dump_left(os);
+        }
+    }
 };
 
 class Input final : public INode
 {
-    std::string identifier_;
 public:
     Input() : INode{nullptr, nullptr} {}
 
@@ -266,6 +359,11 @@ public:
             throw GenericError{"std::cin failed to input", __LINE__};
         }
         return value;
+    }
+
+    virtual void dump(std::ostream &os) const
+    {
+        os << "node" << this << "[" << "label=Input" << "];\n";
     }
 };
 
@@ -302,6 +400,16 @@ public:
     {
         throw GenericError{"operand hasn't value", __LINE__};
     }
+
+    virtual void dump(std::ostream &os) const
+    {
+        os << "node" << this << "[" << "label=Unary" << "];\n";
+        if (has_left())
+        {
+            os << "node" << this << "--" << "node" << get_left() << ";\n";
+            dump_left(os);
+        }
+    }
 };
 
 class Logical final : public INode
@@ -335,6 +443,21 @@ public:
     catch (const std::bad_optional_access &except)
     {
         throw GenericError{"operand hasn't value", __LINE__};
+    }
+
+    virtual void dump(std::ostream &os) const
+    {
+        os << "node" << this << "[" << "label=Logical" << "];\n";
+        if (has_left())
+        {
+            os << "node" << this << "--" << "node" << get_left() << ";\n";
+            dump_left(os);
+        }
+        if (has_right())
+        {
+            os << "node" << this << "--" << "node" << get_right() << ";\n";
+            dump_right(os);
+        }
     }
 };
 } // namespace Node

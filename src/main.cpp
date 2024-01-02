@@ -7,6 +7,17 @@
 #include "driver.hpp"
 
 
+namespace
+{
+static void dump_ast(Tomboy::AST::pINode ast, std::ostream &os)
+{
+    std::cout << "graph {\n";
+    std::cout << "root--node" << ast << ";\n";
+    ast->dump(std::cout);
+    std::cout << "}\n";
+}
+} // anonymous namespace
+
 int main(int argc, char **argv) try
 {
     if (argc != 2)
@@ -30,9 +41,17 @@ int main(int argc, char **argv) try
     }
 
     auto program = std::unique_ptr<Tomboy::AST::INode>{driver.getAST()};
-    Tomboy::SymTab vars{};
-    vars.push_scope();
-    program->eval(vars);
+
+    if (std::getenv("TOMBOY_TREE") != NULL)
+    {
+        dump_ast(program.get(), std::cout);
+    }
+    else
+    {
+        Tomboy::SymTab vars{};
+        vars.push_scope();
+        program->eval(vars);
+    }
 
     return EXIT_SUCCESS;
 }
