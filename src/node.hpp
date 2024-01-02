@@ -22,8 +22,8 @@ public:
     virtual std::optional<Int> eval(SymTab &table) const override
     {
         Int res = 0;
-        std::optional<Int> left_val = left_->eval(table);
-        std::optional<Int> right_val = right_->eval(table);
+        std::optional<Int> left_val = eval_left(table);
+        std::optional<Int> right_val = eval_right(table);
         if ((left_val == std::nullopt) || (right_val == std::nullopt))
         {
             throw GenericError{"operand hasn't value", __LINE__};
@@ -114,7 +114,7 @@ public:
 
     virtual std::optional<Int> eval(SymTab &table) const override
     {
-        std::optional<Int> value = left_->eval(table);
+        std::optional<Int> value = eval_left(table);
         if (value == std::nullopt)
         {
             throw GenericError{"operand hasn't value", __LINE__};
@@ -134,14 +134,14 @@ public:
 
     virtual std::optional<Int> eval(SymTab &table) const override
     {
-        if (left_ != nullptr)
+        if (has_left())
         {
-            left_->eval(table);
+            eval_left(table);
         }
 
-        if (right_ != nullptr)
+        if (has_right())
         {
-            right_->eval(table);
+            eval_right(table);
         }
 
         return std::nullopt;
@@ -167,13 +167,13 @@ public:
         if (cond != 0)
         {
             table.push_scope();
-            left_->eval(table);
+            eval_left(table);
             table.pop_scope();
         }
-        else if (right_ != nullptr)
+        else if (has_right())
         {
             table.push_scope();
-            right_->eval(table);
+            eval_right(table);
             table.pop_scope();
         }
 
@@ -196,10 +196,10 @@ public:
     {
         std::optional<Int> cond = std::nullopt;
 
-        while (((cond = left_->eval(table)) != std::nullopt) && (cond != 0))
+        while (((cond = eval_left(table)) != std::nullopt) && (cond != 0))
         {
             table.push_scope();
-            right_->eval(table);
+            eval_right(table);
             table.pop_scope();
         }
 
@@ -240,7 +240,7 @@ public:
 
     virtual std::optional<Int> eval(SymTab &table) const override
     {
-        auto value = left_->eval(table);
+        auto value = eval_left(table);
         if (value == std::nullopt)
         {
             throw GenericError{"operand hasn't value", __LINE__};
@@ -280,7 +280,7 @@ public:
     virtual std::optional<Int> eval(SymTab &table) const override
     {
         Int res = 0;
-        std::optional<Int> left_val = left_->eval(table);
+        std::optional<Int> left_val = eval_left(table);
         if (left_val == std::nullopt)
         {
             throw GenericError{"operand hasn't value", __LINE__};
@@ -319,11 +319,11 @@ public:
         switch (op_)
         {
         case Operations::AND:
-            res = left_->eval(table).value() && right_->eval(table).value();
+            res = eval_left(table).value() && eval_right(table).value();
             break;
 
         case Operations::OR:
-            res = left_->eval(table).value() || right_->eval(table).value();
+            res = eval_left(table).value() || eval_right(table).value();
             break;
 
         default:

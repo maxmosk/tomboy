@@ -100,9 +100,28 @@ using pINode = INode *;
 
 class INode
 {
-protected:
     pINode left_;
     pINode right_;
+
+protected:
+    bool has_left() const
+    {
+        return left_ != nullptr;
+    }
+    bool has_right() const
+    {
+        return right_ != nullptr;
+    }
+
+    virtual std::optional<Int> eval_left(SymTab &table) const
+    {
+        return left_->eval(table);
+    }
+    virtual std::optional<Int> eval_right(SymTab &table) const
+    {
+        return right_->eval(table);
+    }
+
 public:
     virtual std::optional<Int> eval(SymTab &table) const = 0;
 
