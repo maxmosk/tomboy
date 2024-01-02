@@ -19,15 +19,11 @@ public:
     Operation(pINode left, pINode right, Operations op)
         : INode{left, right}, op_{op} {}
 
-    std::optional<Int> eval(SymTab &table) const override
+    std::optional<Int> eval(SymTab &table) const override try
     {
         Int res = 0;
         std::optional<Int> left_val = eval_left(table);
         std::optional<Int> right_val = eval_right(table);
-        if ((left_val == std::nullopt) || (right_val == std::nullopt))
-        {
-            throw GenericError{"operand hasn't value", __LINE__};
-        }
 
         switch (op_)
         {
@@ -90,6 +86,10 @@ public:
 
         return res;
     }
+    catch (const std::bad_optional_access &except)
+    {
+        throw GenericError{"operand hasn't value", __LINE__};
+    }
 };
 
 class Integer final : public INode
@@ -112,17 +112,17 @@ public:
     Print(pINode left)
         : INode{left, nullptr} {}
 
-    std::optional<Int> eval(SymTab &table) const override
+    std::optional<Int> eval(SymTab &table) const override try
     {
         std::optional<Int> value = eval_left(table);
-        if (value == std::nullopt)
-        {
-            throw GenericError{"operand hasn't value", __LINE__};
-        }
 
         std::cout << value.value() << std::endl;
 
         return std::nullopt;
+    }
+    catch (const std::bad_optional_access &except)
+    {
+        throw GenericError{"operand hasn't value", __LINE__};
     }
 };
 
@@ -155,14 +155,9 @@ public:
     If(pINode cond, pINode left, pINode right)
         : INode{left, right}, cond_{cond} {}
 
-    std::optional<Int> eval(SymTab &table) const override
+    std::optional<Int> eval(SymTab &table) const override try
     {
         auto cond = cond_->eval(table);
-
-        if (cond == std::nullopt)
-        {
-            throw GenericError{"condition hasn't value", __LINE__};
-        }
 
         if (cond != 0)
         {
@@ -178,6 +173,10 @@ public:
         }
 
         return std::nullopt;
+    }
+    catch (const std::bad_optional_access &except)
+    {
+        throw GenericError{"condition hasn't value", __LINE__};
     }
 
     ~If()
@@ -226,7 +225,7 @@ public:
     catch (const UndefinedVariable &except)
     {
         std::fprintf(stdout, "Undefined variable \"%s\" on %zu:%zu (Tomboy source line %zu)\n",
-                identifier_.c_str(), static_cast<size_t>(0), static_cast<size_t>(0), except.source_line());
+                identifier_.c_str(), static_cast<std::size_t>(0), static_cast<std::size_t>(0), except.source_line());
         throw UndefinedVariable(except.source_line(), 0, 0);
     }
 };
@@ -238,17 +237,17 @@ public:
     Assign(pINode left, std::string &identifier)
         : INode{left, nullptr}, identifier_{identifier} {}
 
-    std::optional<Int> eval(SymTab &table) const override
+    std::optional<Int> eval(SymTab &table) const override try
     {
         auto value = eval_left(table);
-        if (value == std::nullopt)
-        {
-            throw GenericError{"operand hasn't value", __LINE__};
-        }
 
         table.assign(identifier_, value.value());
 
         return value;
+    }
+    catch (const std::bad_optional_access &except)
+    {
+        throw GenericError{"operand hasn't value", __LINE__};
     }
 };
 
@@ -277,14 +276,10 @@ public:
     Unary(pINode expr, Operations op)
         : INode{expr, nullptr}, op_{op} {}
 
-    std::optional<Int> eval(SymTab &table) const override
+    std::optional<Int> eval(SymTab &table) const override try
     {
         Int res = 0;
         std::optional<Int> left_val = eval_left(table);
-        if (left_val == std::nullopt)
-        {
-            throw GenericError{"operand hasn't value", __LINE__};
-        }
 
         switch (op_)
         {
@@ -302,6 +297,10 @@ public:
         }
 
         return res;
+    }
+    catch (const std::bad_optional_access &except)
+    {
+        throw GenericError{"operand hasn't value", __LINE__};
     }
 };
 
@@ -333,7 +332,7 @@ public:
 
         return res;
     }
-    catch (std::bad_optional_access &except)
+    catch (const std::bad_optional_access &except)
     {
         throw GenericError{"operand hasn't value", __LINE__};
     }
