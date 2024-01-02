@@ -19,7 +19,7 @@ public:
     Operation(pINode left, pINode right, Operations op)
         : INode{left, right}, op_{op} {}
 
-    virtual std::optional<Int> eval(SymTab &table) const override
+    std::optional<Int> eval(SymTab &table) const override
     {
         Int res = 0;
         std::optional<Int> left_val = eval_left(table);
@@ -99,7 +99,7 @@ public:
     Integer(Int value)
         : INode{nullptr, nullptr}, value_{value} {}
 
-    virtual std::optional<Int> eval(SymTab &table) const override
+    std::optional<Int> eval(SymTab &table) const override
     {
         return value_;
     }
@@ -112,7 +112,7 @@ public:
     Print(pINode left)
         : INode{left, nullptr} {}
 
-    virtual std::optional<Int> eval(SymTab &table) const override
+    std::optional<Int> eval(SymTab &table) const override
     {
         std::optional<Int> value = eval_left(table);
         if (value == std::nullopt)
@@ -132,7 +132,7 @@ public:
     Compound(pINode left, pINode right)
         : INode{left, right} {}
 
-    virtual std::optional<Int> eval(SymTab &table) const override
+    std::optional<Int> eval(SymTab &table) const override
     {
         if (has_left())
         {
@@ -155,7 +155,7 @@ public:
     If(pINode cond, pINode left, pINode right)
         : INode{left, right}, cond_{cond} {}
 
-    virtual std::optional<Int> eval(SymTab &table) const override
+    std::optional<Int> eval(SymTab &table) const override
     {
         auto cond = cond_->eval(table);
 
@@ -180,7 +180,7 @@ public:
         return std::nullopt;
     }
 
-    virtual ~If()
+    ~If()
     {
         delete cond_;
     }
@@ -192,7 +192,7 @@ public:
     While(pINode cond, pINode right)
         : INode{cond, right} {}
 
-    virtual std::optional<Int> eval(SymTab &table) const override
+    std::optional<Int> eval(SymTab &table) const override
     {
         std::optional<Int> cond = std::nullopt;
 
@@ -219,7 +219,7 @@ public:
     Variable(std::string &identifier)
         : INode{nullptr, nullptr}, identifier_{identifier} {}
 
-    virtual std::optional<Int> eval(SymTab &table) const override try
+    std::optional<Int> eval(SymTab &table) const override try
     {
         return table.value_of(identifier_);
     }
@@ -238,7 +238,7 @@ public:
     Assign(pINode left, std::string &identifier)
         : INode{left, nullptr}, identifier_{identifier} {}
 
-    virtual std::optional<Int> eval(SymTab &table) const override
+    std::optional<Int> eval(SymTab &table) const override
     {
         auto value = eval_left(table);
         if (value == std::nullopt)
@@ -258,7 +258,7 @@ class Input final : public INode
 public:
     Input() : INode{nullptr, nullptr} {}
 
-    virtual std::optional<Int> eval(SymTab &table) const override
+    std::optional<Int> eval(SymTab &table) const override
     {
         Int value;
         std::cin >> value;
@@ -277,7 +277,7 @@ public:
     Unary(pINode expr, Operations op)
         : INode{expr, nullptr}, op_{op} {}
 
-    virtual std::optional<Int> eval(SymTab &table) const override
+    std::optional<Int> eval(SymTab &table) const override
     {
         Int res = 0;
         std::optional<Int> left_val = eval_left(table);
@@ -312,7 +312,7 @@ public:
     Logical(pINode left, pINode right, Operations op)
         : INode{left, right}, op_{op} {}
 
-    virtual std::optional<Int> eval(SymTab &table) const override try
+    std::optional<Int> eval(SymTab &table) const override try
     {
         Int res = 0;
 
@@ -342,4 +342,4 @@ public:
 } // namespace AST
 } // namespace Tomboy
 
-#endif // INODE_HPP_INCLUDED
+#endif // NODE_HPP_INCLUDED
