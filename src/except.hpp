@@ -15,7 +15,7 @@ public:
             : runtime_error{info},
               source_line_{source_line},
               line_{line},
-              column_{column_}
+              column_{column}
     {}
 
     std::size_t source_line() const

@@ -12,7 +12,7 @@ namespace yy
 {
 class Driver
 {
-    Tomboy::AST::pINode root_;
+    Tomboy::AST::pINode root_ = nullptr;
     TomboyLexer *plex_;
 
 public:

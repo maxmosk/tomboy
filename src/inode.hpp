@@ -116,6 +116,8 @@ public:
     INode &operator=(const INode &) = delete;
     INode &operator=(const INode &&) = delete;
 
+    virtual ~INode() = default;
+
     pINode get_left()
     {
         return left_;
