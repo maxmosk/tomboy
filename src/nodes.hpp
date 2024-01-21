@@ -194,14 +194,13 @@ public:
 
 class If final : public INode
 {
-    pINode cond_;
 public:
     If(pINode cond, pINode left, pINode right)
-        : INode{left, right}, cond_{cond} {}
+        : INode{left, right, cond} {}
 
     std::optional<Int> eval(SymTab &table) const override try
     {
-        auto cond = cond_->eval(table);
+        auto cond = third_->eval(table);
 
         if (cond != 0)
         {
@@ -226,10 +225,10 @@ public:
     virtual void dump(std::ostream &os) const
     {
         os << "node" << this << "[" << "label=If" << "];\n";
-        if (cond_ != nullptr)
+        if (third_ != nullptr)
         {
-            os << "node" << this << "--" << "node" << cond_ << ";\n";
-            cond_->dump(os);
+            os << "node" << this << "--" << "node" << third_ << ";\n";
+            third_->dump(os);
         }
         if (left_ != nullptr)
         {
@@ -241,11 +240,6 @@ public:
             os << "node" << this << "--" << "node" << right_ << ";\n";
             right_->dump(os);
         }
-    }
-
-    ~If()
-    {
-        delete cond_;
     }
 };
 

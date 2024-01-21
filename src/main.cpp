@@ -2,21 +2,8 @@
 #include <fstream>
 #include <memory>
 
-#include <lexer.hpp>
+#include "ast.hpp"
 
-#include "driver.hpp"
-
-
-namespace
-{
-static void dump_ast(Tomboy::AST::pINode ast, std::ostream &os)
-{
-    std::cout << "graph {\n";
-    std::cout << "root--node" << ast << ";\n";
-    ast->dump(std::cout);
-    std::cout << "}\n";
-}
-} // anonymous namespace
 
 int main(int argc, char **argv) try
 {
@@ -33,24 +20,15 @@ int main(int argc, char **argv) try
         return EXIT_FAILURE;
     }
 
-    auto lexer = std::make_unique<TomboyLexer>(&source);
-    yy::Driver driver(lexer.get());
-    if (!driver.parse())
-    {
-        return EXIT_FAILURE;
-    }
-
-    auto program = std::unique_ptr<Tomboy::AST::INode>{driver.getAST()};
+    Tomboy::AST::AST program(source);
 
     if (std::getenv("TOMBOY_TREE") != NULL)
     {
-        dump_ast(program.get(), std::cout);
+        program.dump(std::cout);
     }
     else
     {
-        Tomboy::SymTab vars{};
-        vars.push_scope();
-        program->eval(vars);
+        program.run();
     }
 
     return EXIT_SUCCESS;

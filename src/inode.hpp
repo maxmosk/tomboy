@@ -103,22 +103,32 @@ class INode
 protected:
     pINode left_;
     pINode right_;
+    pINode third_;
 
 public:
     virtual std::optional<Int> eval(SymTab &table) const = 0;
     virtual void dump(std::ostream &os) const = 0;
 
-    INode(pINode left, pINode right)
-        : left_{left}, right_{right} {}
+    INode(pINode left, pINode right, pINode third = nullptr)
+        : left_{left}, right_{right}, third_{third} {}
     INode(const INode &) = delete;
     INode(const INode &&) = delete;
     INode &operator=(const INode &) = delete;
     INode &operator=(const INode &&) = delete;
 
-    virtual ~INode()
+    pINode get_left()
     {
-        delete left_;
-        delete right_;
+        return left_;
+    }
+
+    pINode get_right()
+    {
+        return right_;
+    }
+
+    pINode get_third()
+    {
+        return third_;
     }
 };
 } // namespace AST

@@ -41,6 +41,14 @@ public:
             : GenericError{"Variable doesn't exist", source_line, line, column}
     {}
 };
+
+class ParsingError : public GenericError
+{
+public:
+    ParsingError(std::size_t source_line, std::size_t line = 0, std::size_t column = 0)
+            : GenericError{"Failed source code parsing", source_line, line, column}
+    {}
+};
 } // namespace Tomboy
 
 #endif // EXCEPT_HPP_INCLUDED
