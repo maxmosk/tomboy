@@ -1,5 +1,5 @@
-#ifndef NODE_HPP_INCLUDED
-#define NODE_HPP_INCLUDED
+#ifndef NODES_HPP_INCLUDED
+#define NODES_HPP_INCLUDED
 
 #include <iostream>
 
@@ -22,8 +22,8 @@ public:
     std::optional<Int> eval(SymTab &table) const override try
     {
         Int res = 0;
-        std::optional<Int> left_val = eval_left(table);
-        std::optional<Int> right_val = eval_right(table);
+        std::optional<Int> left_val = left_->eval(table);
+        std::optional<Int> right_val = right_->eval(table);
 
         switch (op_)
         {
@@ -94,15 +94,15 @@ public:
     virtual void dump(std::ostream &os) const
     {
         os << "node" << this << "[" << "label=Operation" << "];\n";
-        if (has_left())
+        if (left_ != nullptr)
         {
-            os << "node" << this << "--" << "node" << get_left() << ";\n";
-            dump_left(os);
+            os << "node" << this << "--" << "node" << left_ << ";\n";
+            left_->dump(os);
         }
-        if (has_right())
+        if (right_ != nullptr)
         {
-            os << "node" << this << "--" << "node" << get_right() << ";\n";
-            dump_right(os);
+            os << "node" << this << "--" << "node" << right_ << ";\n";
+            right_->dump(os);
         }
     }
 };
@@ -133,7 +133,7 @@ public:
 
     std::optional<Int> eval(SymTab &table) const override try
     {
-        std::optional<Int> value = eval_left(table);
+        std::optional<Int> value = left_->eval(table);
 
         std::cout << value.value() << std::endl;
 
@@ -147,10 +147,10 @@ public:
     virtual void dump(std::ostream &os) const
     {
         os << "node" << this << "[" << "label=Print" << "];\n";
-        if (has_left())
+        if (left_ != nullptr)
         {
-            os << "node" << this << "--" << "node" << get_left() << ";\n";
-            dump_left(os);
+            os << "node" << this << "--" << "node" << left_ << ";\n";
+            left_->dump(os);
         }
     }
 };
@@ -163,14 +163,14 @@ public:
 
     std::optional<Int> eval(SymTab &table) const override
     {
-        if (has_left())
+        if (left_ != nullptr)
         {
-            eval_left(table);
+            left_->eval(table);
         }
 
-        if (has_right())
+        if (right_ != nullptr)
         {
-            eval_right(table);
+            right_->eval(table);
         }
 
         return std::nullopt;
@@ -179,15 +179,15 @@ public:
     virtual void dump(std::ostream &os) const
     {
         os << "node" << this << "[" << "label=Compound" << "];\n";
-        if (has_left())
+        if (left_ != nullptr)
         {
-            os << "node" << this << "--" << "node" << get_left() << ";\n";
-            dump_left(os);
+            os << "node" << this << "--" << "node" << left_ << ";\n";
+            left_->dump(os);
         }
-        if (has_right())
+        if (right_ != nullptr)
         {
-            os << "node" << this << "--" << "node" << get_right() << ";\n";
-            dump_right(os);
+            os << "node" << this << "--" << "node" << right_ << ";\n";
+            right_->dump(os);
         }
     }
 };
@@ -206,13 +206,13 @@ public:
         if (cond != 0)
         {
             table.push_scope();
-            eval_left(table);
+            left_->eval(table);
             table.pop_scope();
         }
-        else if (has_right())
+        else if (right_ != nullptr)
         {
             table.push_scope();
-            eval_right(table);
+            right_->eval(table);
             table.pop_scope();
         }
 
@@ -231,15 +231,15 @@ public:
             os << "node" << this << "--" << "node" << cond_ << ";\n";
             cond_->dump(os);
         }
-        if (has_left())
+        if (left_ != nullptr)
         {
-            os << "node" << this << "--" << "node" << get_left() << ";\n";
-            dump_left(os);
+            os << "node" << this << "--" << "node" << left_ << ";\n";
+            left_->dump(os);
         }
-        if (has_right())
+        if (right_ != nullptr)
         {
-            os << "node" << this << "--" << "node" << get_right() << ";\n";
-            dump_right(os);
+            os << "node" << this << "--" << "node" << right_ << ";\n";
+            right_->dump(os);
         }
     }
 
@@ -259,10 +259,10 @@ public:
     {
         std::optional<Int> cond = std::nullopt;
 
-        while (((cond = eval_left(table)) != std::nullopt) && (cond != 0))
+        while (((cond = left_->eval(table)) != std::nullopt) && (cond != 0))
         {
             table.push_scope();
-            eval_right(table);
+            right_->eval(table);
             table.pop_scope();
         }
 
@@ -277,15 +277,15 @@ public:
     virtual void dump(std::ostream &os) const
     {
         os << "node" << this << "[" << "label=While" << "];\n";
-        if (has_left())
+        if (left_ != nullptr)
         {
-            os << "node" << this << "--" << "node" << get_left() << ";\n";
-            dump_left(os);
+            os << "node" << this << "--" << "node" << left_ << ";\n";
+            left_->dump(os);
         }
-        if (has_right())
+        if (right_ != nullptr)
         {
-            os << "node" << this << "--" << "node" << get_right() << ";\n";
-            dump_right(os);
+            os << "node" << this << "--" << "node" << right_ << ";\n";
+            right_->dump(os);
         }
     }
 };
@@ -323,7 +323,7 @@ public:
 
     std::optional<Int> eval(SymTab &table) const override try
     {
-        auto value = eval_left(table);
+        auto value = left_->eval(table);
 
         table.assign(identifier_, value.value());
 
@@ -337,10 +337,10 @@ public:
     virtual void dump(std::ostream &os) const
     {
         os << "node" << this << "[" << "label=Assign" << "];\n";
-        if (has_left())
+        if (left_ != nullptr)
         {
-            os << "node" << this << "--" << "node" << get_left() << ";\n";
-            dump_left(os);
+            os << "node" << this << "--" << "node" << left_ << ";\n";
+            left_->dump(os);
         }
     }
 };
@@ -377,7 +377,7 @@ public:
     std::optional<Int> eval(SymTab &table) const override try
     {
         Int res = 0;
-        std::optional<Int> left_val = eval_left(table);
+        std::optional<Int> left_val = left_->eval(table);
 
         switch (op_)
         {
@@ -404,10 +404,10 @@ public:
     virtual void dump(std::ostream &os) const
     {
         os << "node" << this << "[" << "label=Unary" << "];\n";
-        if (has_left())
+        if (left_ != nullptr)
         {
-            os << "node" << this << "--" << "node" << get_left() << ";\n";
-            dump_left(os);
+            os << "node" << this << "--" << "node" << left_ << ";\n";
+            left_->dump(os);
         }
     }
 };
@@ -426,11 +426,11 @@ public:
         switch (op_)
         {
         case Operations::AND:
-            res = eval_left(table).value() && eval_right(table).value();
+            res = left_->eval(table).value() && right_->eval(table).value();
             break;
 
         case Operations::OR:
-            res = eval_left(table).value() || eval_right(table).value();
+            res = left_->eval(table).value() || right_->eval(table).value();
             break;
 
         default:
@@ -448,15 +448,15 @@ public:
     virtual void dump(std::ostream &os) const
     {
         os << "node" << this << "[" << "label=Logical" << "];\n";
-        if (has_left())
+        if (left_ != nullptr)
         {
-            os << "node" << this << "--" << "node" << get_left() << ";\n";
-            dump_left(os);
+            os << "node" << this << "--" << "node" << left_ << ";\n";
+            left_->dump(os);
         }
-        if (has_right())
+        if (right_ != nullptr)
         {
-            os << "node" << this << "--" << "node" << get_right() << ";\n";
-            dump_right(os);
+            os << "node" << this << "--" << "node" << right_ << ";\n";
+            right_->dump(os);
         }
     }
 };
@@ -464,4 +464,4 @@ public:
 } // namespace AST
 } // namespace Tomboy
 
-#endif // NODE_HPP_INCLUDED
+#endif // NODES_HPP_INCLUDED

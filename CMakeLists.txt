@@ -22,7 +22,7 @@ include_directories(${SOURCE_DIR})
 
 add_executable(tomboy
     "${SOURCE_DIR}/main.cpp"
-    "${SOURCE_DIR}/node.cpp"
+    "${SOURCE_DIR}/nodes.cpp"
     ${FLEX_scanner_OUTPUTS}
     ${BISON_parser_OUTPUTS}
             )

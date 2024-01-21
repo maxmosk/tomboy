@@ -1,4 +1,4 @@
-#include "node.hpp"
+#include "nodes.hpp"
 
 
 namespace Tomboy

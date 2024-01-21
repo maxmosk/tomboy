@@ -11,7 +11,7 @@
 {
 #include <string>
 
-#include "node.hpp"
+#include "nodes_factory.hpp"
 
 namespace yy
 {

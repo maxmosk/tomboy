@@ -100,47 +100,9 @@ using pINode = INode *;
 
 class INode
 {
+protected:
     pINode left_;
     pINode right_;
-
-protected:
-    bool has_left() const
-    {
-        return left_ != nullptr;
-    }
-    bool has_right() const
-    {
-        return right_ != nullptr;
-    }
-
-    virtual std::optional<Int> eval_left(SymTab &table) const
-    {
-        return left_->eval(table);
-    }
-    virtual std::optional<Int> eval_right(SymTab &table) const
-    {
-        return right_->eval(table);
-    }
-
-    const pINode get_left() const
-    {
-        return left_;
-    }
-
-    const pINode get_right() const
-    {
-        return right_;
-    }
-
-    void dump_left(std::ostream &os) const
-    {
-        left_->dump(os);
-    }
-
-    void dump_right(std::ostream &os) const
-    {
-        right_->dump(os);
-    }
 
 public:
     virtual std::optional<Int> eval(SymTab &table) const = 0;
@@ -159,28 +121,6 @@ public:
         delete right_;
     }
 };
-
-pINode make_integer(Int value);
-
-pINode make_operation(pINode left, pINode right, Operations op);
-
-pINode make_print(pINode expr);
-
-pINode make_compound(pINode first, pINode second);
-
-pINode make_if(pINode cond, pINode then_branch, pINode else_branch = nullptr);
-
-pINode make_while(pINode cond, pINode body);
-
-pINode make_variable(std::string *identifier);
-
-pINode make_assign(pINode expr, std::string *identifier);
-
-pINode make_input();
-
-pINode make_unary(pINode value, Operations op);
-
-pINode make_logical(pINode left, pINode right, Operations op);
 } // namespace AST
 } // namespace Tomboy
 
