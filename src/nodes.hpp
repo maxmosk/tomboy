@@ -19,7 +19,7 @@ public:
     Operation(pINode left, pINode right, Operations op)
         : INode{left, right}, op_{op} {}
 
-    std::optional<Int> eval(SymTab &table) const override try
+    std::optional<Int> eval(SymTab &table) const override
     {
         Int res = 0;
         std::optional<Int> left_val = left_->eval(table);
@@ -86,12 +86,8 @@ public:
 
         return res;
     }
-    catch (const std::bad_optional_access &except)
-    {
-        throw GenericError{"operand hasn't value", __LINE__};
-    }
 
-    virtual void dump(std::ostream &os) const
+    void dump(std::ostream &os) const override
     {
         os << "node" << this << "[" << "label=Operation" << "];\n";
         if (left_ != nullptr)
@@ -119,7 +115,7 @@ public:
         return value_;
     }
 
-    virtual void dump(std::ostream &os) const
+    void dump(std::ostream &os) const override
     {
         os << "node" << this << "[" << "label=Integer" << "];\n";
     }
@@ -131,7 +127,7 @@ public:
     Print(pINode left)
         : INode{left, nullptr} {}
 
-    std::optional<Int> eval(SymTab &table) const override try
+    std::optional<Int> eval(SymTab &table) const override
     {
         std::optional<Int> value = left_->eval(table);
 
@@ -139,12 +135,8 @@ public:
 
         return std::nullopt;
     }
-    catch (const std::bad_optional_access &except)
-    {
-        throw GenericError{"operand hasn't value", __LINE__};
-    }
 
-    virtual void dump(std::ostream &os) const
+    void dump(std::ostream &os) const override
     {
         os << "node" << this << "[" << "label=Print" << "];\n";
         if (left_ != nullptr)
@@ -176,7 +168,7 @@ public:
         return std::nullopt;
     }
 
-    virtual void dump(std::ostream &os) const
+    void dump(std::ostream &os) const override
     {
         os << "node" << this << "[" << "label=Compound" << "];\n";
         if (left_ != nullptr)
@@ -198,31 +190,23 @@ public:
     If(pINode cond, pINode left, pINode right)
         : INode{left, right, cond} {}
 
-    std::optional<Int> eval(SymTab &table) const override try
+    std::optional<Int> eval(SymTab &table) const override
     {
         auto cond = third_->eval(table);
 
         if (cond != 0)
         {
-            table.push_scope();
             left_->eval(table);
-            table.pop_scope();
         }
         else if (right_ != nullptr)
         {
-            table.push_scope();
             right_->eval(table);
-            table.pop_scope();
         }
 
         return std::nullopt;
     }
-    catch (const std::bad_optional_access &except)
-    {
-        throw GenericError{"condition hasn't value", __LINE__};
-    }
 
-    virtual void dump(std::ostream &os) const
+    void dump(std::ostream &os) const override
     {
         os << "node" << this << "[" << "label=If" << "];\n";
         if (third_ != nullptr)
@@ -251,24 +235,15 @@ public:
 
     std::optional<Int> eval(SymTab &table) const override
     {
-        std::optional<Int> cond = std::nullopt;
-
-        while (((cond = left_->eval(table)) != std::nullopt) && (cond != 0))
+        while (left_->eval(table) != 0)
         {
-            table.push_scope();
             right_->eval(table);
-            table.pop_scope();
-        }
-
-        if (cond == std::nullopt)
-        {
-            throw GenericError{"condition hasn't value", __LINE__};
         }
 
         return std::nullopt;
     }
 
-    virtual void dump(std::ostream &os) const
+    void dump(std::ostream &os) const override
     {
         os << "node" << this << "[" << "label=While" << "];\n";
         if (left_ != nullptr)
@@ -302,7 +277,7 @@ public:
         throw UndefinedVariable(except.source_line(), 0, 0);
     }
 
-    virtual void dump(std::ostream &os) const
+    void dump(std::ostream &os) const override
     {
         os << "node" << this << "[" << "label=Variable" << "];\n";
     }
@@ -328,7 +303,7 @@ public:
         throw GenericError{"operand hasn't value", __LINE__};
     }
 
-    virtual void dump(std::ostream &os) const
+    void dump(std::ostream &os) const override
     {
         os << "node" << this << "[" << "label=Assign" << "];\n";
         if (left_ != nullptr)
@@ -355,7 +330,7 @@ public:
         return value;
     }
 
-    virtual void dump(std::ostream &os) const
+    void dump(std::ostream &os) const override
     {
         os << "node" << this << "[" << "label=Input" << "];\n";
     }
@@ -368,7 +343,7 @@ public:
     Unary(pINode expr, Operations op)
         : INode{expr, nullptr}, op_{op} {}
 
-    std::optional<Int> eval(SymTab &table) const override try
+    std::optional<Int> eval(SymTab &table) const override
     {
         Int res = 0;
         std::optional<Int> left_val = left_->eval(table);
@@ -390,12 +365,8 @@ public:
 
         return res;
     }
-    catch (const std::bad_optional_access &except)
-    {
-        throw GenericError{"operand hasn't value", __LINE__};
-    }
 
-    virtual void dump(std::ostream &os) const
+    void dump(std::ostream &os) const override
     {
         os << "node" << this << "[" << "label=Unary" << "];\n";
         if (left_ != nullptr)
@@ -413,7 +384,7 @@ public:
     Logical(pINode left, pINode right, Operations op)
         : INode{left, right}, op_{op} {}
 
-    std::optional<Int> eval(SymTab &table) const override try
+    std::optional<Int> eval(SymTab &table) const override
     {
         Int res = 0;
 
@@ -434,12 +405,8 @@ public:
 
         return res;
     }
-    catch (const std::bad_optional_access &except)
-    {
-        throw GenericError{"operand hasn't value", __LINE__};
-    }
 
-    virtual void dump(std::ostream &os) const
+    void dump(std::ostream &os) const override
     {
         os << "node" << this << "[" << "label=Logical" << "];\n";
         if (left_ != nullptr)

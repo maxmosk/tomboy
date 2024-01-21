@@ -131,6 +131,35 @@ public:
         return third_;
     }
 };
+
+class Scope : public INode
+{
+public:
+    Scope(pINode next) : INode(next, nullptr)
+    {
+    }
+
+    std::optional<Int> eval(SymTab &table) const override
+    {
+        if (left_ != nullptr)
+        {
+            table.push_scope();
+            left_->eval(table);
+            table.pop_scope();
+        }
+        return std::nullopt;
+    }
+
+    void dump(std::ostream &os) const override
+    {
+        os << "node" << this << "[" << "label=Scope" << "];\n";
+        if (left_ != nullptr)
+        {
+            os << "node" << this << "--" << "node" << left_ << ";\n";
+            left_->dump(os);
+        }
+    }
+};
 } // namespace AST
 } // namespace Tomboy
 

@@ -69,5 +69,10 @@ pINode make_logical(pINode left, pINode right, Operations op)
 {
     return new Node::Logical{left, right, op};
 }
+
+pINode make_scope(pINode next)
+{
+    return new Scope(next);
+}
 } // namespace AST
 } // namespace Tomboy

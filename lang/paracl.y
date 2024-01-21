@@ -89,10 +89,10 @@ parser::token_type yylex(parser::semantic_type *yylval, Driver *driver);
 
 %%
 program:    statements          { driver->setAST($1); }
-        |   %empty              { driver->setAST(Tomboy::AST::make_compound(nullptr, nullptr)); }
+        |   %empty              { driver->setAST(Tomboy::AST::make_scope(nullptr)); }
 ;
 
-statements: statement statements { $$ = Tomboy::AST::make_compound($1, $2); }
+statements: statement statements { $$ = Tomboy::AST::make_scope(Tomboy::AST::make_compound($1, $2)); }
         |   statement
 ;
 
@@ -104,20 +104,20 @@ statement:  print SCOLON
         |   block
 ;
 
-block:      LEFT_BRACE statements RIGHT_BRACE { $$ = $2; }
-        |   LEFT_BRACE RIGHT_BRACE { $$ = Tomboy::AST::make_compound(nullptr, nullptr); }
+block:      LEFT_BRACE statements RIGHT_BRACE { $$ = Tomboy::AST::make_scope($2); }
+        |   LEFT_BRACE RIGHT_BRACE { $$ = Tomboy::AST::make_scope(nullptr); }
 
 if:         IF LEFT_PARENTHESS expression RIGHT_PARENTHESS
-                statement %prec THEN    { $$ = Tomboy::AST::make_if($3, $5); }
+                statement %prec THEN    { $$ = Tomboy::AST::make_if($3, Tomboy::AST::make_scope($5)); }
         |   IF LEFT_PARENTHESS expression RIGHT_PARENTHESS
                 statement
             ELSE
-                statement               { $$ = Tomboy::AST::make_if($3, $5, $7); }
+                statement               { $$ = Tomboy::AST::make_if($3, Tomboy::AST::make_scope($5), Tomboy::AST::make_scope($7)); }
 
 ;
 
 while:      WHILE LEFT_PARENTHESS expression RIGHT_PARENTHESS
-                statement { $$ = Tomboy::AST::make_while($3, $5); }
+                statement { $$ = Tomboy::AST::make_while($3, Tomboy::AST::make_scope($5)); }
 ;
 
 print:      PRINT expression    { $$ = Tomboy::AST::make_print($2); }

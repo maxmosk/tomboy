@@ -29,6 +29,8 @@ pINode make_input();
 pINode make_unary(pINode value, Operations op);
 
 pINode make_logical(pINode left, pINode right, Operations op);
+
+pINode make_scope(pINode next);
 } // namespace AST
 } // namespace Tomboy
 
